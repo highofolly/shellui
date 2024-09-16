@@ -1,20 +1,20 @@
-import curses
 from .typings import List, Buffer
 
 
 class Terminal:
     def __init__(self):
         self._buffer: List[Buffer]
+        import curses
+        self.curses: curses = curses
+        self.stdscr: curses.window = curses.initscr()
 
-    def set_buffer(self, buffer: Buffer):
+    def set_buffer(self, buffer: Buffer) -> None:
         self._buffer = buffer
 
-    def draw(self):
-        stdscr = curses.initscr()
-
-        curses.noecho()
-        curses.curs_set(0)
-        stdscr.clear()
+    def draw(self) -> None:
+        self.curses.noecho()
+        self.curses.curs_set(0)
+        self.stdscr.clear()
 
         def _recursive_buffer_iteration(buffer: Buffer) -> str:
             ret = ""
@@ -26,5 +26,8 @@ class Terminal:
                 ret += method_return
             return ret
 
-        stdscr.addstr(_recursive_buffer_iteration(self._buffer))
-        stdscr.getch()
+        self.stdscr.addstr(_recursive_buffer_iteration(self._buffer))
+        self.stdscr.refresh()
+
+    def read(self) -> int:
+        return self.stdscr.getch()
