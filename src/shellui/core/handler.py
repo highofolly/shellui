@@ -1,4 +1,5 @@
 from .typings import Callable
+from .. import logging
 
 
 class EventUnit:
@@ -6,6 +7,7 @@ class EventUnit:
         self.func: Callable = func
 
     def __call__(self, *args, **kwargs):
+        logging.debug(f"<{__name__}>: {self.__class__}: call function {self.func} (agrs={args}, kwargs={kwargs})")
         return self.func(*args, **kwargs)
 
 

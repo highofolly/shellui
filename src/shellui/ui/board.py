@@ -14,6 +14,8 @@ class Button(Label):
     def __init__(self, *args, **kwargs):
         super(Button, self).__init__(*args, **kwargs)
         self.event.create.on_click(self.on_click)
+        self.event.create.key_pressed(
+            lambda key_char: self.event.call.on_click() if key_char == 10 else None)
 
     def on_click(self) -> None: ...
 
