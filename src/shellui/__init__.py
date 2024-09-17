@@ -13,5 +13,9 @@ Discord Server - https://discord.com/invite/jchJKYqNmK
 
 __version__ = "0.1a2"
 
-# import logging
-# logging.basicConfig(level=logging.DEBUG, filename="shellui_debug.log", filemode="w", format="%(asctime)s %(levelname)s %(message)s")
+import logging
+
+
+def debug_start(file_name: str = "shellui_debug.log"):
+    logging.basicConfig(level=logging.DEBUG, filename=file_name, filemode="w",
+                        format="%(asctime)s - %(levelname)s : %(message)s")
