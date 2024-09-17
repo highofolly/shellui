@@ -1,20 +1,22 @@
 from ..core.terminal import Terminal
-from ..core.typings import List, Buffer
-from .abstracts import AbstractLayout, BaseElement
+from .abstracts import BaseElement
 
 
-class Root(AbstractLayout):
+class Root:
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
         cls.console = Terminal()
-        cls._layout: List[BaseElement]
+        cls.layout: BaseElement
         return instance
 
-    def adjust(self, buffer: Buffer) -> str:
-        return buffer.method()
+    def update(self):
+        self.layout.update()
 
-    def set_layout(self, layout: AbstractLayout) -> None:
-        self.elements = layout.elements[:]
+    def read_keys(self):
+        self.layout.event.call.key_pressed(self.console.read())
+
+    def set_layout(self, layout: BaseElement) -> None:
+        self.layout = layout
 
     def refresh(self) -> None:
-        self.console.set_buffer(self.build())
+        self.console.set_buffer(self.layout.build())
