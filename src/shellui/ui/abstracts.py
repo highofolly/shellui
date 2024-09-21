@@ -41,6 +41,9 @@ class AbstractLayout(BaseElement):
         self.cursor: int = 0
         self.event.create.adjust(self.adjust)
 
+    def key_pressed(self, key_char: int) -> None:
+        self.elements[self.cursor].event.call.key_pressed(key_char)
+
     @abstractmethod
     def adjust(self, buffer: Buffer) -> str:
         raise NotImplementedError
