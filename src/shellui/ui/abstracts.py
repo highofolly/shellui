@@ -37,16 +37,16 @@ class AbstractWidget(BaseElement):
 class AbstractLayout(BaseElement):
     def __init__(self, *args, **kwargs):
         super(AbstractLayout, self).__init__(*args, **kwargs)
-        self.elements: List[BaseElement] = []
+        self.elements: Collection = Collection()
         self.cursor: int = 0
         self.event.create.adjust(self.adjust)
-
-    def key_pressed(self, key_char: int) -> None:
-        self.elements[self.cursor].event.call.key_pressed(key_char)
 
     @abstractmethod
     def adjust(self, buffer: Buffer) -> str:
         raise NotImplementedError
+
+    def key_pressed(self, key_char: int) -> None:
+        self.elements[self.cursor].event.call.key_pressed(key_char)
 
     def update(self) -> None:
         self.elements.run_method("update")
