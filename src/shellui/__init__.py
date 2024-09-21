@@ -11,7 +11,7 @@ Discord Server - https://discord.com/invite/jchJKYqNmK
        Youtube - https://www.youtube.com/@sw3aty702
 """
 
-__version__ = "0.1a3"
+__version__ = "0.1b1"
 
 import logging
 
