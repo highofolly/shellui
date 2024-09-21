@@ -1,10 +1,10 @@
 from .. import logging
-from ..core.overloads import ABC, abstractmethod
+from ..core.interfaces import *
 from ..core.handler import EventManager
-from ..core.typings import Buffer, List
+from ..core.typings import Buffer, Collection, List
 
 
-class BaseElement(ABC):
+class BaseElement(BaseElementInterface):
     def __init__(self, *args, **kwargs):
         self.event = EventManager()
         self.event.create.build(self.build)
