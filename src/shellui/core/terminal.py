@@ -1,19 +1,20 @@
+from .. import logging
 from .typings import List, Buffer
+import curses
 
 
 class Terminal:
     def __init__(self):
         self._buffer: List[Buffer]
-        import curses
-        self.curses: curses = curses
         self.stdscr: curses.window = curses.initscr()
+        self.stdscr.keypad(True)
+        curses.noecho()
+        curses.curs_set(0)
 
     def set_buffer(self, buffer: Buffer) -> None:
         self._buffer = buffer
 
     def draw(self) -> None:
-        self.curses.noecho()
-        self.curses.curs_set(0)
         self.stdscr.clear()
 
         def _recursive_buffer_iteration(buffer: Buffer) -> str:
