@@ -49,8 +49,7 @@ class AbstractLayout(BaseElement):
         raise NotImplementedError
 
     def update(self) -> None:
-        for i in self.get_elements():
-            i.event.call.update()
+        self.elements.run_method("update")
 
     def build(self) -> Buffer:
         def create_buffer_list() -> str:
