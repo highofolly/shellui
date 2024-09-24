@@ -1,5 +1,5 @@
 from .. import logging
-from .typings import List, Buffer
+from .typings import List, Tuple, Callable, Buffer
 import curses
 
 
@@ -17,17 +17,16 @@ class Terminal:
     def draw(self) -> None:
         self.stdscr.clear()
 
-        def _recursive_buffer_iteration(buffer: Buffer) -> str:
-            ret = ""
-            method_return = buffer.method()
+        def _recursive_buffer_iteration(method: Callable, position: Tuple[int, int]) -> dict:
+            method_return = method()
             if isinstance(method_return, list):
-                for i in method_return:
-                    ret += _recursive_buffer_iteration(i)
+                for _bottom_buffer in method_return:
+                    yield from _recursive_buffer_iteration(_bottom_buffer.method, [a + b for a, b in zip(_bottom_buffer.position, position)])
             else:
-                ret += method_return
-            return ret
+                yield {"y": position[1], "x": position[0], "args": method_return}
 
-        self.stdscr.addstr(_recursive_buffer_iteration(self._buffer))
+        for string_args in _recursive_buffer_iteration(self._buffer.method, self._buffer.position):
+            self.stdscr.addstr(string_args["y"], string_args["x"], string_args["args"])
         self.stdscr.refresh()
 
     def read(self) -> int:
