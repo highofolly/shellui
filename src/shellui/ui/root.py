@@ -1,5 +1,5 @@
-from ..core.terminal import Terminal
-from .abstracts import BaseElement
+from . import BaseElement
+from ..core import Terminal
 
 
 class Root:

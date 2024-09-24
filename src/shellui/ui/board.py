@@ -1,6 +1,6 @@
+from . import AbstractWidget, AbstractLayout
 from .. import logging
-from ..ui import AbstractWidget, AbstractLayout
-from ..core import curses
+from ..core import curses, List, Any, Buffer
 
 
 class Label(AbstractWidget):
