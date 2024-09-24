@@ -7,16 +7,17 @@ class BaseElement(BaseElementInterface):
         self.event = EventManager()
         self.event.create.build(self.build)
         self.event.create.update(self.update)
-        self.event.create.key_pressed(self.key_pressed)
-        logging.debug(f"<{__name__}>: create class {self.__class__} (agrs={args}, kwargs={kwargs})")
+        self.event.create.key_pressed(lambda: None)
+        self.position = kwargs.pop("position", [0, 0])
+        logging.debug(f"CREATE CLASS <{self.__class__.__name__}> (agrs={args}, kwargs={kwargs})")
 
     @abstractmethod
     def build(self) -> Buffer:
         raise NotImplementedError
 
-    def key_pressed(self, key_char: int) -> None: ...
-
-    def update(self) -> None: ...
+    @abstractmethod
+    def update(self) -> Any:
+        raise NotImplementedError
 
 
 class AbstractWidget(BaseElement):
@@ -29,37 +30,37 @@ class AbstractWidget(BaseElement):
         raise NotImplementedError
 
     def build(self) -> Buffer:
-        return Buffer(self.event.call.output)
+        return Buffer(self.event.call.output, self.position)
 
 
 class AbstractLayout(BaseElement):
     def __init__(self, *args, **kwargs):
         super(AbstractLayout, self).__init__(*args, **kwargs)
         self.elements: Collection = Collection()
-        self.cursor: int = 0
         self.event.create.adjust(self.adjust)
+        self.event.create.key_pressed(self.key_pressed)
 
     @abstractmethod
     def adjust(self, buffer: Buffer) -> str:
         raise NotImplementedError
 
-    def key_pressed(self, key_char: int) -> None:
-        self.elements[self.cursor].event.call.key_pressed(key_char)
+    def key_pressed(self, key_char: int) -> Any: ...
 
-    def update(self) -> None:
-        self.elements.run_method("update")
+    def update(self) -> Any:
+        return self.elements.run_method("update")
 
-    def build(self) -> Buffer:
-        def create_buffer_list() -> str:
-            ret: List[str] = []
-            for i in self.get_elements():
-                ret.append(self.event.call.adjust(i.event.call.build()))
-            return "".join(ret)
-        return Buffer(create_buffer_list)
-
-    def get_elements(self) -> List[BaseElement]:
-        return self.elements
-
-    def add_element(self, element: BaseElement) -> BaseElement:
+    def add_element(self, element: BaseElement, position: Tuple[int, int] = None) -> BaseElement:
+        element.position = position or [0, 0]
         self.elements.append(element)
         return element
+
+    def build(self) -> Buffer:
+        def create_buffer_list() -> List[Buffer]:
+            ret: List[Buffer] = []
+            for element in self.elements:
+                element_buffer = element.event.call.build()
+                ret.append(Buffer(method=lambda: self.event.call.adjust(element_buffer),
+                                  position=element_buffer.position))
+            return ret
+
+        return Buffer(create_buffer_list, self.position)
