@@ -6,6 +6,7 @@ from .interfaces import *
 @dataclass
 class Buffer:
     method: Callable
+    position: Tuple[int, int]
     kwargs: dict = None
 
     def __post_init__(self):
