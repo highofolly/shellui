@@ -16,10 +16,6 @@ class Buffer:
 
 @dataclass
 class Collection(list):
-    def __getitem__(self, item):
-        if isinstance(item, slice):
-            return self[slice[0]:slice[1]] if slice[1] > slice[0] else reversed(self)[slice[1]:slice[0]]
-
     def append(self, element):
         if not isinstance(element, BaseElementInterface):
             raise TypeError(f"Expected type 'BaseElement', got '{type(element)}' instead")
