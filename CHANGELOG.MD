@@ -1,40 +1,17 @@
 
-v0.1 / 2024-09-23
+v0.2-alpha.1 / 2024-09-24
 ==================
 
 ### added:
-  * CHANGELOG.MD file
-  * README.MD file
-
-v0.1-beta.1 / 2024-09-17
-========================
-
-### added:
-  * debug_start function
-  * debug messages to core.handler.EventUnit and ui.abstracts.BaseElement
-  * key_pressed method to ui.abstracts.AbstractLayout
-  * core.interfaces module 
-  * Collection dataclass to typing.py
+  * position argument in core.typing.Buffer dataclass
+  * position argument in ui.abstracts.AbstractWidget class
 ### changed:
-  * hierarchy of ui.root.Root
-  * hierarchy of ui.abstracts.BaseElement
-  * update method in ui.abstracts.AbstractLayout
+  * format in debug_start function
+  * optimize import
+  * draw method in core.terminal.Terminal class
+  * build method in ui.abstracts.AbstractWidget class
+  * build and add_element method in ui.abstracts.AbstractLayout class
+  * event system in ui.abstracts module
+  * key_pressed method in ui.board.HLayout class
 ### deleted:
-  * overloads.py module
-
-v0.1-alpha.2 / 2024-09-16
-=========================
-
-### added:
-  * read method to core.terminal.Terminal
-  * ui.board module
-### changed:
-  * draw method in core.terminal.Terminal
-  * events in abstracts.py
-
-v0.1-alpha.1 / 2024-09-16
-=========================
-
-### added:
-  * shellui.ui package 
-  * shellui.core package
+  * \_\_getitem__ method in core.typing.Collection class
