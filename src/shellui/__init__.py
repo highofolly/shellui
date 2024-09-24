@@ -17,4 +17,4 @@ import logging
 
 def debug_start(file_name: str = "shellui_debug.log"):
     logging.basicConfig(level=logging.DEBUG, filename=file_name, filemode="w",
-                        format="%(asctime)s - %(levelname)s : %(message)s")
+                        format="%(asctime)s - %(levelname)s - %(filename)s : %(message)s\n")
