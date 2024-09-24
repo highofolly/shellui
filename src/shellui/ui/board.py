@@ -10,11 +10,8 @@ class Label(AbstractWidget):
         self.state = False
         self.event.create.is_active(self.is_active)
 
-    def is_active(self):
-        return False
-
-    def output(self):
-        return self.text
+    def is_active(self): return False
+    def output(self): return self.text
 
 
 class Button(Label):
@@ -25,27 +22,27 @@ class Button(Label):
         self.event.create.key_pressed(
             lambda key_char: self.event.call.on_click() if key_char == curses.KEY_ENTER else None)
 
-    def is_active(self):
-        return True
+    def is_active(self): return True
 
+    def update(self) -> Any: ...
     def on_click(self) -> None: ...
 
 
 class HLayout(AbstractLayout):
-    def __init__(self):
-        super(HLayout, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(HLayout, self).__init__(*args, **kwargs)
+        self.cursor: int = 0
         self.UP_KEYS = [curses.KEY_UP, curses.KEY_LEFT]
         self.DOWN_KEYS = [curses.KEY_DOWN, curses.KEY_RIGHT]
 
-    def key_pressed(self, key_char: int) -> None:
+    def key_pressed(self, key_char: int) -> Any:
         self.elements.set_attribute("state", False)
         if key_char in self.UP_KEYS:
             self.cursor -= 1
         elif key_char in self.DOWN_KEYS:
             self.cursor += 1
         else:
-            super().key_pressed(key_char)
-            return
+            return self.elements[self.cursor].event.call.key_pressed(key_char)
         self.elements.get_collection(lambda element: element.is_active())[self.cursor].state = True
 
     def adjust(self, buffer):
