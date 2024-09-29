@@ -10,7 +10,7 @@ shellui - library simplifies the creation of TUI (Text User Interface)
        Youtube - https://www.youtube.com/@sw3aty702
 """
 
-__version__ = "0.2a1"
+__version__ = "0.2a2"
 
 import logging
 
