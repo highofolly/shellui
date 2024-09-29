@@ -31,7 +31,7 @@ class Collection(list):
             raise TypeError(f"Expected type 'BaseElement', got '{type(element)}' instead")
         super().insert(index, element)
 
-    def set_attribute(self,
+    def set_elements_attribute(self,
                       item: str,
                       value: Any,
                       _lambda: Callable = lambda element: True) -> Self:
@@ -42,7 +42,7 @@ class Collection(list):
                 return_list.append(element)
         return return_list
 
-    def get_collection(self,
+    def get_elements_collection(self,
                       _lambda: Callable = lambda element: True) -> Self:
         return_list: Collection = []
         for index, element in enumerate(self):
@@ -50,13 +50,13 @@ class Collection(list):
                 return_list.append(element)
         return return_list
 
-    def run_method(self,
+    def run_elements_method(self,
                    method: str,
                    _lambda: Callable = lambda element: True,
                    args: List = None,
                    kwargs: dict = None) -> List[Any]:
         args, kwargs = args or [], kwargs or {}
         return_list: List[Any] = []
-        for element in self.get_collection(_lambda):
+        for element in self.get_elements_collection(_lambda):
             return_list.append(getattr(element, method)(*args, **kwargs))
         return return_list
