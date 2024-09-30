@@ -50,13 +50,13 @@ class Collection(list):
                 return_list.append(element)
         return return_list
 
-    def run_elements_method(self,
-                   method: str,
-                   _lambda: Callable = lambda element: True,
-                   args: List = None,
-                   kwargs: dict = None) -> List[Any]:
+    def call_elements_event(self,
+                            event: str,
+                            _lambda: Callable = lambda element: True,
+                            args: List = None,
+                            kwargs: dict = None) -> List[Any]:
         args, kwargs = args or [], kwargs or {}
         return_list: List[Any] = []
         for element in self.get_elements_collection(_lambda):
-            return_list.append(getattr(element, method)(*args, **kwargs))
+            return_list.append(getattr(element.event.call, event)(*args, **kwargs))
         return return_list
