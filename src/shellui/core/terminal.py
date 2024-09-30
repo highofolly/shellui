@@ -1,5 +1,5 @@
+from . import List, Tuple, Callable, Buffer, Collection
 from .. import logging
-from .typings import List, Tuple, Callable, Buffer
 import curses
 
 

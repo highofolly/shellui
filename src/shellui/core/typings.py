@@ -32,9 +32,9 @@ class Collection(list):
         super().insert(index, element)
 
     def set_elements_attribute(self,
-                      item: str,
-                      value: Any,
-                      _lambda: Callable = lambda element: True) -> Self:
+                               item: str,
+                               value: Any,
+                               _lambda: Callable = lambda element: True) -> Self:
         return_list: Collection = Collection()
         for element in self:
             if _lambda(element):
@@ -43,7 +43,7 @@ class Collection(list):
         return return_list
 
     def get_elements_collection(self,
-                      _lambda: Callable = lambda element: True) -> Self:
+                                _lambda: Callable = lambda element: True) -> Self:
         return_list: Collection = []
         for index, element in enumerate(self):
             if _lambda(element):
