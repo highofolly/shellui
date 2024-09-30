@@ -1,4 +1,19 @@
 
+v0.2-beta.1 / 2024-09-30
+==================
+
+### changed:
+  * core.handler.EventUnit class:
+    * now \_\_call__ method shortens passed args and kwargs for debug message
+    * now \_\_init__ method saves passed parent class in EventUnit.parent attribute
+  * core.typings.Collection.run_elements_method method:
+    * rename run_elements_method to call_elements_event
+    * now calls events on Collection elements
+  * ui.board.HLayout.render method:
+    * now changes element position in HLayout based on position same element
+  * rename method output to render in ui.abstracts.BaseElement class
+  * improve code readability
+
 v0.2-alpha.2 / 2024-09-29
 ==================
 
