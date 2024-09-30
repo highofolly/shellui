@@ -4,11 +4,12 @@ from ..core import BaseElementInterface, EventManager, Buffer, Collection, Tuple
 
 class BaseElement(BaseElementInterface):
     def __init__(self, *args, **kwargs):
-        self.event = EventManager()
+        self.event = EventManager(self)
         self.position = kwargs.pop("position", [0, 0])
+
         self.event.create.update(self.update)
         self.event.create.key_pressed(self.key_pressed)
-        self.event.create.output(self.output)
+        self.event.create.render(self.render)
         self.event.create.build(self.build)
         logging.debug(f"CREATE CLASS <{self.__class__.__name__}> (agrs={args}, kwargs={kwargs})")
 
@@ -17,10 +18,10 @@ class BaseElement(BaseElementInterface):
     @abstractmethod
     def key_pressed(self, key_char) -> Any: raise NotImplementedError
     @abstractmethod
-    def output(self) -> Union[str, List[Buffer]]: raise NotImplementedError
+    def render(self) -> Union[str, Collection]: raise NotImplementedError
 
     def build(self) -> Buffer:
-        return Buffer(self.event.call.output, self.position)
+        return Buffer(self.event.call.render, self.position)
 
 
 class AbstractWidget(BaseElement):
