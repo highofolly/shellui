@@ -10,6 +10,9 @@ class ElementState(Enum):
 
 
 class ActiveWidget(AbstractWidget):
+    """
+    Represents abstract class of active widget for layout
+    """
     def __init__(self, *args, **kwargs):
         super(ActiveWidget, self).__init__(*args, **kwargs)
         self.state: ElementState = ElementState.INACTIVE
@@ -28,13 +31,22 @@ class ActiveWidget(AbstractWidget):
             return self.event.call.on_key_press(key_char)
 
     def select(self) -> None:
+        """
+        Sets widget state to "ElementState.SELECTED"
+        """
         self.state = ElementState.SELECTED
 
     def deselect(self) -> None:
+        """
+        Sets widget state to "ElementState.INACTIVE"
+        """
         self.state = ElementState.INACTIVE
 
 
 class StaticWidget(AbstractWidget):
+    """
+    Represents abstract class of passive widget for layout
+    """
     def __init__(self, *args, **kwargs):
         super(AbstractWidget, self).__init__(*args, **kwargs)
 
@@ -43,6 +55,9 @@ class StaticWidget(AbstractWidget):
 
 
 class Label(StaticWidget):
+    """
+    Represents graphic text label element
+    """
     def __init__(self, *args, **kwargs):
         super(Label, self).__init__(*args, **kwargs)
         self.text = kwargs.pop("text")
@@ -52,6 +67,9 @@ class Label(StaticWidget):
 
 
 class Button(ActiveWidget):
+    """
+    Represents graphical button element
+    """
     def __init__(self, *args, **kwargs):
         super(Button, self).__init__(*args, **kwargs)
         self.text = kwargs.pop("text")
@@ -61,6 +79,9 @@ class Button(ActiveWidget):
 
 
 class HLayout(AbstractLayout):
+    """
+    Represents a vertical layout
+    """
     def __init__(self, *args, **kwargs):
         super(HLayout, self).__init__(*args, **kwargs)
         self.cursor: int = 0

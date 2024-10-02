@@ -4,6 +4,9 @@ import curses
 
 
 class Terminal:
+    """
+    Manages interface for working with text-based user interface
+    """
     def __init__(self):
         self._buffer: List[Buffer]
         self.stdscr: curses.window = curses.initscr()
@@ -12,9 +15,17 @@ class Terminal:
         curses.curs_set(0)
 
     def set_buffer(self, buffer: Buffer) -> None:
+        """
+        Sets rendering buffer
+
+        :param buffer: Rendering buffer
+        """
         self._buffer = buffer
 
     def draw(self) -> None:
+        """
+        Clears screen and draws buffer contents to the screen
+        """
         self.stdscr.clear()
 
         def _recursive_buffer_iteration(method: Callable, position: Tuple[int, int]) -> dict:
@@ -30,4 +41,9 @@ class Terminal:
         self.stdscr.refresh()
 
     def read(self) -> int:
+        """
+        Reads character entered by user
+
+        :return: Key char
+        """
         return self.stdscr.getch()
