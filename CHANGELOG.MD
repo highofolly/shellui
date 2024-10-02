@@ -1,4 +1,10 @@
 
+v0.2 / 2024-10-02
+==================
+
+### added:
+  * docstrings to classes, methods and arguments
+
 v0.2-beta.1 / 2024-09-30
 ==================
 
