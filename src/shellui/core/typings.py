@@ -4,20 +4,25 @@ from .interfaces import *
 
 
 @dataclass
+class Position:
+    x: int
+    y: int
+
+    def __iter__(self):
+        for i in range(2):
+            yield self.x if i == 0 else self.y
+
+
+@dataclass
 class Buffer:
     """
     Represents a container for storing method and position used in text interface
     """
-    method: Callable = None
+    function: Callable = None
     """Method that will be called to get data"""
-    position: Tuple[int, int] = None
+    position: Position = None
     """Position (x, y) on screen to display data"""
-    kwargs: dict = None
-
-    def __post_init__(self):
-        if self.kwargs is not None:
-            for name, key in self.kwargs.items():
-                setattr(self, name, key)
+    size: Position = None
 
 
 @dataclass
@@ -25,14 +30,16 @@ class Collection(list):
     """
     Represents an extended list and provides type safety for elements that must implement BaseElementInterface interface
     """
-    def append(self, element: BaseElementInterface):
-        if not isinstance(element, BaseElementInterface):
-            raise TypeError(f"Expected type 'BaseElement', got '{type(element)}' instead")
+    interface_level: Type = BaseElementInterface
+
+    def append(self, element: interface_level):
+        if not isinstance(element, self.interface_level):
+            raise TypeError(f"Expected type '{self.interface_level}', got '{type(element)}' instead")
         super().append(element)
 
-    def insert(self, index, element):
-        if not isinstance(element, BaseElementInterface):
-            raise TypeError(f"Expected type 'BaseElement', got '{type(element)}' instead")
+    def insert(self, index: int, element: interface_level):
+        if not isinstance(element, self.interface_level):
+            raise TypeError(f"Expected type '{self.interface_level}', got '{type(element)}' instead")
         super().insert(index, element)
 
     def set_elements_attribute(self,
@@ -62,8 +69,8 @@ class Collection(list):
         :param _lambda: Condition function to filter elements
         :return: Filtered collection
         """
-        return_list: Collection = []
-        for index, element in enumerate(self):
+        return_list: Collection = Collection()
+        for element in self:
             if _lambda(element):
                 return_list.append(element)
         return return_list
