@@ -8,7 +8,7 @@ class Root:
     """
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
-        cls.console = Terminal()
+        cls.terminal = Terminal()
         cls.layout: BaseElement
         return instance
 
@@ -16,13 +16,13 @@ class Root:
         """
         Updates layout's element state
         """
-        self.layout.update()
+        self.layout.event.call.update()
 
     def read_keys(self):
         """
         Reads key in terminal and sends it to layout's key_pressed event
         """
-        self.layout.event.call.key_pressed(self.console.read())
+        self.layout.keyboard.key_pressed(self.terminal.read())
 
     def set_layout(self, layout: BaseElement) -> None:
         """
@@ -34,4 +34,4 @@ class Root:
         """
         Sets rendering buffer for terminal and builds layout's element buffer
         """
-        self.console.set_buffer(self.layout.build())
+        self.terminal.set_buffer(self.layout.event.call.build())
