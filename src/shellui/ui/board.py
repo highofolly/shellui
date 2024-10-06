@@ -1,109 +1,108 @@
-from . import AbstractWidget, AbstractLayout
+from . import AbstractWidget, AbstractLayout, ElementState
 from .. import logging
-from ..core import curses, List, Any, Buffer
-from enum import Enum
+from ..core import curses, List, Any, Position, Buffer
 
 
-class ElementState(Enum):
-    INACTIVE = 0
-    SELECTED = 1
-
-
-class ActiveWidget(AbstractWidget):
+class Widget(AbstractWidget):
     """
     Represents abstract class of active widget for layout
     """
     def __init__(self, *args, **kwargs):
-        super(ActiveWidget, self).__init__(*args, **kwargs)
-        self.state: ElementState = ElementState.INACTIVE
-        self.event.create.on_click(self.on_click)
-        self.event.create.on_key_press(self.on_key_press)
+        super().__init__(*args, **kwargs)
+        self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
 
     def update(self): ...
     def render(self): ...
     def on_click(self) -> Any: ...
-    def on_key_press(self, key_char) -> Any: ...
 
-    def key_pressed(self, key_char) -> Any:
-        if key_char == 10:
-            return self.event.call.on_click()
-        else:
-            return self.event.call.on_key_press(key_char)
+    def select(self):
+        super(Widget, self).select()
 
-    def select(self) -> None:
-        """
-        Sets widget state to "ElementState.SELECTED"
-        """
-        self.state = ElementState.SELECTED
-
-    def deselect(self) -> None:
-        """
-        Sets widget state to "ElementState.INACTIVE"
-        """
-        self.state = ElementState.INACTIVE
+    def build(self):
+        lines = self.text.split('\n')
+        self.size = Position(max(len(line) for line in lines), len(lines))
+        return super().build()
 
 
-class StaticWidget(AbstractWidget):
-    """
-    Represents abstract class of passive widget for layout
-    """
-    def __init__(self, *args, **kwargs):
-        super(AbstractWidget, self).__init__(*args, **kwargs)
-
-    def update(self): ...
-    def key_pressed(self, key_char) -> Any: ...
-
-
-class Label(StaticWidget):
+class Label(Widget):
     """
     Represents graphic text label element
     """
     def __init__(self, *args, **kwargs):
         super(Label, self).__init__(*args, **kwargs)
         self.text = kwargs.pop("text")
+        self.flags.is_active_element = False
 
     def render(self):
         return self.text
 
 
-class Button(ActiveWidget):
+class Button(Widget):
     """
     Represents graphical button element
     """
     def __init__(self, *args, **kwargs):
         super(Button, self).__init__(*args, **kwargs)
         self.text = kwargs.pop("text")
+        self.flags.is_active_element = True
 
     def render(self):
-        return self.text if self.state == ElementState.INACTIVE else f"> {self.text}"
+        return self.text if self.state == ElementState.MISSED else f"> {self.text}"
 
 
-class HLayout(AbstractLayout):
+class VLayout(AbstractLayout):
     """
     Represents a vertical layout
     """
     def __init__(self, *args, **kwargs):
-        super(HLayout, self).__init__(*args, **kwargs)
+        super(VLayout, self).__init__(*args, **kwargs)
         self.cursor: int = 0
-        self.UP_KEYS = [curses.KEY_UP, curses.KEY_LEFT]
-        self.DOWN_KEYS = [curses.KEY_DOWN, curses.KEY_RIGHT]
+        self.lay_name = kwargs.pop("lay_name")
+        self.flags.is_active_element = True
+        self.UP_KEYS = [curses.KEY_UP, curses.KEY_LEFT, curses.KEY_BTAB]
+        self.DOWN_KEYS = [curses.KEY_DOWN, curses.KEY_RIGHT, 9]
+        self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
+        self.keyboard.add_keyboard_event(self.key_up, lambda key_char: key_char in self.UP_KEYS)
+        self.keyboard.add_keyboard_event(self.key_down, lambda key_char: key_char in self.DOWN_KEYS)
 
-    def update(self) -> Any:
-        self.elements.get_elements_collection(lambda element: isinstance(element, ActiveWidget))[self.cursor].select()
+    def add_element(self, element, position = None):
+        element.build()
+        if element.size.x > self.size.x:
+            self.size.x = element.size.x
+        self.size.y += element.size.y
+        return super().add_element(element, position)
+
+    def on_click(self):
+        return self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(10)
+
+    def key_up(self):
+        if self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(curses.KEY_UP) != [1]:
+            if self.cursor > 0:
+                self.cursor -= 1
+                return 1
+
+    def key_down(self):
+        if self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(curses.KEY_DOWN) != [1]:
+            if self.cursor < len(self.elements.get_elements_collection(lambda element: element.flags.is_active_element)) - 1:
+                self.cursor += 1
+                return 1
+
+    def select(self):
+        self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].event.call.select()
+
+    def deselect(self):
+        self.elements.call_elements_event("deselect", lambda element: element.flags.is_active_element)
+
+    def update(self):
+        self.event.call.deselect()
+        self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].event.call.select()
         return self.elements.call_elements_event("update")
-
-    def key_pressed(self, key_char: int) -> Any:
-        self.elements.set_elements_attribute("state", ElementState.INACTIVE)
-        if key_char in self.UP_KEYS:
-            self.cursor = self.cursor - 1 if self.cursor > 0 else len(self.elements) - 1
-        elif key_char in self.DOWN_KEYS:
-            self.cursor = self.cursor + 1 if self.cursor < len(self.elements) - 1 else 0
-        else:
-            return self.elements[self.cursor].event.call.key_pressed(key_char)
 
     def render(self):
         matrix: List[Buffer] = []
-        for index, buffer in enumerate(sorted(self.elements.call_elements_event("build"), key=lambda x: x.position[1])):
-            buffer.position[1] = index
+        temp_pos = 0
+        for buffer in sorted(self.elements.call_elements_event("build"), key=lambda element: element.position.y):
+            buffer.position.y = temp_pos
+            temp_pos += buffer.size.y
             matrix.append(buffer)
         return matrix
