@@ -1,5 +1,53 @@
-from . import Callable
+from . import Callable, List, Any, dataclass
 from .. import logging
+
+
+@dataclass
+class keyboardEvent:
+    function: Callable
+    _lambda: Callable
+
+
+class KeyboardManager:
+    def __init__(self, parent):
+        """
+        :param parent: Parent class object
+        """
+        self.parent: object = parent
+        self.keyboard_events: List[keyboardEvent] = []
+
+    def add_keyboard_event(self, function: Callable, _lambda: Callable = lambda key_char: True) -> keyboardEvent:
+        event = keyboardEvent(function, _lambda)
+        self.keyboard_events.append(event)
+        return event
+
+    def key_pressed(self, key_char) -> List[Any]:
+        return_list: List[Any] = []
+        for event in self.keyboard_events:
+            if event._lambda(key_char):
+                logging.debug(f"CLASS <{self.parent.__class__.__name__}> CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
+                return_list.append(event.function())
+        return return_list
+
+
+class FlagsManager:
+    def __init__(self):
+        self.flags = {}
+
+    def __getattr__(self, item):
+        return self.flags.get(item, None)
+
+    def __setattr__(self, key, value: bool):
+        if key == "flags":
+            super().__setattr__(key, value)
+        else:
+            if not isinstance(value, bool):
+                raise TypeError(f"Expected type 'bool', got '{type(value)}' instead")
+            self.flags[key] = value
+
+    def __delattr__(self, item):
+        if item in self.flags:
+            del self.flags[item]
 
 
 class EventUnit:
@@ -36,7 +84,7 @@ class EventUnit:
         if len(kwargs_items) > 2:
             kwargs_str += ', ...'
 
-        logging.debug(f"CLASS <{self.parent.__class__.__name__}> CALLS <{self.func.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
+        logging.debug(f"CLASS <{self.parent.__class__.__name__}> CALLS EVENT <{self.func.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
         return self.func(*args, **kwargs)
 
 
