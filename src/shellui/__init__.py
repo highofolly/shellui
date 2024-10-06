@@ -15,6 +15,16 @@ __version__ = "0.3.0a1"
 import logging
 
 
+def create_level(level: int, name: str):
+    logging.addLevelName(level, name)
+
+    def logging_message(message, *args, **kwargs):
+        if logging.root.isEnabledFor(level):
+            logging.log(level, message, *args, **kwargs)
+
+    return logging_message
+
+
 def debug_start(file_name: str = "shellui_debug.log", logging_level: int = logging.DEBUG):
     logging.basicConfig(level=logging_level, filename=file_name, filemode="w",
                         format="%(asctime)s - %(levelname)s - %(filename)s : %(message)s\n")
