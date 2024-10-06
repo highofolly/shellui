@@ -15,6 +15,6 @@ __version__ = "0.3.0a1"
 import logging
 
 
-def debug_start(file_name: str = "shellui_debug.log"):
-    logging.basicConfig(level=logging.DEBUG, filename=file_name, filemode="w",
+def debug_start(file_name: str = "shellui_debug.log", logging_level: int = logging.DEBUG):
+    logging.basicConfig(level=logging_level, filename=file_name, filemode="w",
                         format="%(asctime)s - %(levelname)s - %(filename)s : %(message)s\n")
