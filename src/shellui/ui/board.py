@@ -7,6 +7,8 @@ class Widget(AbstractWidget):
     """
     Represents abstract class of active widget for layout
     """
+    class_base_tag = "Widget"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
@@ -28,6 +30,8 @@ class Label(Widget):
     """
     Represents graphic text label element
     """
+    class_base_tag = "Label"
+
     def __init__(self, *args, **kwargs):
         super(Label, self).__init__(*args, **kwargs)
         self.text = kwargs.pop("text")
@@ -41,6 +45,8 @@ class Button(Widget):
     """
     Represents graphical button element
     """
+    class_base_tag = "Button"
+
     def __init__(self, *args, **kwargs):
         super(Button, self).__init__(*args, **kwargs)
         self.text = kwargs.pop("text")
@@ -54,10 +60,11 @@ class VLayout(AbstractLayout):
     """
     Represents a vertical layout
     """
+    class_base_tag = "VLayout"
+
     def __init__(self, *args, **kwargs):
         super(VLayout, self).__init__(*args, **kwargs)
         self.cursor: int = 0
-        self.lay_name = kwargs.pop("lay_name")
         self.flags.is_active_element = True
         self.UP_KEYS = [curses.KEY_UP, curses.KEY_LEFT, curses.KEY_BTAB]
         self.DOWN_KEYS = [curses.KEY_DOWN, curses.KEY_RIGHT, 9]
