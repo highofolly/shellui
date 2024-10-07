@@ -29,7 +29,7 @@ class BaseElement(BaseElementInterface):
         self.event.create.select(self.select)
         self.event.create.deselect(self.deselect)
         self.flags.is_fixed_size = False
-        logging.debug(f"CREATE CLASS <{self.__class__.__name__}> (agrs={args}, kwargs={kwargs})")
+        logging.create(f"CREATE CLASS <{self.__class__.__name__}> (agrs={args}, kwargs={kwargs})")
 
     def select(self) -> None:
         """

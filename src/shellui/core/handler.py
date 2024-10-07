@@ -25,7 +25,7 @@ class KeyboardManager:
         return_list: List[Any] = []
         for event in self.keyboard_events:
             if event._lambda(key_char):
-                logging.debug(f"CLASS <{self.parent.__class__.__name__}> CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
+                logging.keyboard(f"CLASS <{self.parent.__class__.__name__}> CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
                 return_list.append(event.function())
         return return_list
 
@@ -84,7 +84,7 @@ class EventUnit:
         if len(kwargs_items) > 2:
             kwargs_str += ', ...'
 
-        logging.debug(f"CLASS <{self.parent.__class__.__name__}> CALLS EVENT <{self.func.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
+        logging.event(f"CLASS <{self.parent.__class__.__name__}> CALLS EVENT <{self.func.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
         return self.func(*args, **kwargs)
 
 

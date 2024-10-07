@@ -25,6 +25,11 @@ def create_level(level: int, name: str):
     return logging_message
 
 
+logging.event = create_level(5, "EVENT")
+logging.keyboard = create_level(6, "KEYBOARD")
+logging.create = create_level(7, "CREATE")
+
+
 def debug_start(file_name: str = "shellui_debug.log", logging_level: int = logging.DEBUG):
     logging.basicConfig(level=logging_level, filename=file_name, filemode="w",
                         format="%(asctime)s - %(levelname)s - %(filename)s : %(message)s\n")
