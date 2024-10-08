@@ -1,5 +1,5 @@
 from .. import logging
-from ..core import BaseElementInterface, EventManager, FlagsManager, KeyboardManager, Buffer, Position, Collection, Tuple, Any, Union, abstractmethod
+from ..core import BaseElementInterface, EventManager, FlagsManager, KeyboardManager, Buffer, Position, Collection, Tuple, Any, Union, abstractmethod, overload
 from enum import Enum
 
 
@@ -98,14 +98,34 @@ class AbstractLayout(BaseElement):
         super(AbstractLayout, self).__init__(*args, **kwargs)
         self.elements: Collection = Collection()
 
-    def add_element(self, element: BaseElement, position: Union[Position, Tuple[int, int]] = None) -> BaseElement:
+    @overload
+    def add_elements(self, element: BaseElement, position: Union[Position, Tuple[int, int]] = None) -> BaseElement:
         """
-        Adds element to collection
+        Adds element to collection and changes its position
 
         :param element: Element for adding to collection
         :param position: Element position to set position
         :return: Same element
         """
-        element.position = (position if isinstance(position, Position) else Position(*position)) if position else element.position
-        self.elements.append(element)
-        return element
+
+    @overload
+    def add_elements(self, *elements: BaseElement) -> Collection:
+        """
+        Adds elements to collection
+
+        :param elements: Elements for adding to collection
+        :return: Collection same elements
+        """
+
+    def add_elements(self, *args, **kwargs):
+        if len(args) == 1 or kwargs.get("element", None):
+            position = kwargs.get("position")
+            element = args[0]
+            element.position = (position if isinstance(position, Position) else Position(*position)) if position else element.position
+            self.elements.append(element)
+            return element
+        elif len(args) > 1:
+            self.elements.extend(args)
+            return Collection().extend(args)
+        else:
+            raise ValueError("Invalid arguments provided")
