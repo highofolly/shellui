@@ -20,7 +20,7 @@ class BaseElement(BaseElementInterface):
         """
         self.position: Position = Position(*kwargs.pop("position", [0, 0]))
         self.size: Position = Position(0, 0)
-        self.tag = kwargs.pop("tag", self.class_base_tag)
+        self.tag: str = kwargs.pop("tag", self.class_base_tag)
         self.state: ElementState = ElementState.MISSED
 
         self.flags: FlagsManager = FlagsManager()
@@ -129,3 +129,6 @@ class AbstractLayout(BaseElement):
             return Collection().extend(args)
         else:
             raise ValueError("Invalid arguments provided")
+
+    def search_elements_by_tag(self, tag: str) -> Collection:
+        return self.elements.get_elements_collection(lambda element: element.tag == tag)
