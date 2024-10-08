@@ -1,6 +1,6 @@
 from . import AbstractWidget, AbstractLayout, ElementState
 from .. import logging
-from ..core import curses, List, Any, Position, Buffer
+from ..core import curses, List, Any, Position, Buffer, Collection
 
 
 class Widget(AbstractWidget):
@@ -71,13 +71,6 @@ class VLayout(AbstractLayout):
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
         self.keyboard.add_keyboard_event(self.key_up, lambda key_char: key_char in self.UP_KEYS)
         self.keyboard.add_keyboard_event(self.key_down, lambda key_char: key_char in self.DOWN_KEYS)
-
-    def add_element(self, element, position = None):
-        element.build()
-        if element.size.x > self.size.x:
-            self.size.x = element.size.x
-        self.size.y += element.size.y
-        return super().add_element(element, position)
 
     def on_click(self):
         return self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(10)
