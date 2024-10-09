@@ -94,9 +94,10 @@ class VLayout(AbstractLayout):
         return super(VLayout, self).deselect()
 
     def update(self):
+        return_list = super(VLayout, self).update()
         self.event.call.deselect()
-        self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].event.call.select()
-        return self.elements.call_elements_event("update")
+        self.event.call.select()
+        return return_list
 
     def render(self):
         matrix: List[Buffer] = []

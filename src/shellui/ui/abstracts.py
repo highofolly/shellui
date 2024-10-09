@@ -137,3 +137,6 @@ class AbstractLayout(BaseElement):
 
     def search_elements_by_tag(self, tag: str) -> Collection:
         return self.elements.get_elements_collection(lambda element: element.tag == tag)
+
+    def update(self):
+        return self.elements.call_elements_event("update")
