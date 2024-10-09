@@ -32,6 +32,17 @@ class Collection(list):
     """
     interface_level: Type = BaseElementInterface
 
+    def __init__(self, elements: List[interface_level] = None):
+        if elements is None:
+            elements = []
+        for element in elements:
+            if not isinstance(element, self.interface_level):
+                raise TypeError(f"Expected type '{self.interface_level}', got '{type(element)}' instead")
+        super().__init__(elements)
+
+    def __str__(self) -> str:
+        return f"[{', '.join(str(element) for element in self)}]"
+
     def append(self, element: interface_level):
         if not isinstance(element, self.interface_level):
             raise TypeError(f"Expected type '{self.interface_level}', got '{type(element)}' instead")
