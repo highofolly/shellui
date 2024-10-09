@@ -87,9 +87,11 @@ class VLayout(AbstractLayout):
 
     def select(self):
         self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].event.call.select()
+        return super(VLayout, self).select()
 
     def deselect(self):
         self.elements.call_elements_event("deselect", lambda element: element.flags.is_active_element)
+        return super(VLayout, self).deselect()
 
     def update(self):
         self.event.call.deselect()
