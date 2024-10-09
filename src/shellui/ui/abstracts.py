@@ -1,5 +1,5 @@
 from .. import logging
-from ..core import BaseElementInterface, EventManager, FlagsManager, KeyboardManager, Buffer, Position, Collection, Tuple, Any, Union, abstractmethod, overload
+from ..core import BaseElementInterface, EventManager, FlagsManager, KeyboardManager, Buffer, Position, Collection, Tuple, Any, Union, List, abstractmethod, overload
 from enum import Enum
 
 
@@ -61,7 +61,7 @@ class BaseElement(BaseElementInterface):
         raise NotImplementedError
 
     @abstractmethod
-    def render(self) -> Union[str, Collection]:
+    def render(self) -> Union[str, List[Buffer]]:
         """
         Builds element contents
 
@@ -119,16 +119,24 @@ class AbstractLayout(BaseElement):
 
     def add_elements(self, *args, **kwargs):
         if len(args) == 1 or kwargs.get("element", None):
-            position = kwargs.get("position")
-            element = args[0]
-            element.position = (position if isinstance(position, Position) else Position(*position)) if position else element.position
-            self.elements.append(element)
-            return element
+            position = kwargs.get("position", None)
+            return_element = args[0]
+            if not return_element.flags.is_fixed_size:
+                if position:
+                    return_element.position = (position if isinstance(position, Position) else Position(*position)) if position else return_element.position
+            self.elements.append(return_element)
         elif len(args) > 1:
             self.elements.extend(args)
-            return Collection().extend(args)
-        else:
-            raise ValueError("Invalid arguments provided")
+            return_element = Collection()
+            return_element.extend(args)
+        if not self.flags.is_fixed_size:
+            self.size.y += return_element.size.y
+            if return_element.size.x > self.size.x:
+                self.size.x = return_element.size.x
+        return return_element
 
     def search_elements_by_tag(self, tag: str) -> Collection:
         return self.elements.get_elements_collection(lambda element: element.tag == tag)
+
+    def update(self):
+        return self.elements.call_elements_event("update")
