@@ -63,12 +63,16 @@ class VLayout(AbstractLayout):
     def __init__(self, *args, **kwargs):
         super(VLayout, self).__init__(*args, **kwargs)
         self.cursor: int = 0
+        self.cursor_skin: str = kwargs.pop("cursor_skin", "> ")
         self.flags.is_active_element = True
         self.UP_KEYS = [curses.KEY_UP, curses.KEY_LEFT, curses.KEY_BTAB]
         self.DOWN_KEYS = [curses.KEY_DOWN, curses.KEY_RIGHT, 9]
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
         self.keyboard.add_keyboard_event(self.key_up, lambda key_char: key_char in self.UP_KEYS)
         self.keyboard.add_keyboard_event(self.key_down, lambda key_char: key_char in self.DOWN_KEYS)
+
+    def set_cursor_skin(self, skin: str):
+        self.cursor_skin = skin
 
     def on_click(self):
         return self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(10)
