@@ -1,6 +1,6 @@
 from . import AbstractWidget, AbstractLayout, ElementState
 from .. import logging
-from ..core import curses, List, Any, Position, Buffer, Collection
+from ..core import curses, List, Any, Position, Buffer
 
 
 class Widget(AbstractWidget):
@@ -51,7 +51,7 @@ class Button(Widget):
         self.flags.is_active_element = True
 
     def render(self):
-        return self.text if self.state == ElementState.MISSED else f"> {self.text}"
+        return self.text
 
 
 class VLayout(AbstractLayout):
@@ -103,10 +103,19 @@ class VLayout(AbstractLayout):
         self.event.call.select()
         return return_list
 
+    def style(self, element: Widget) -> str:
+        if element.state.value and element.flags.is_active_element:
+            return f"{self.cursor_skin}{element.render()}"
+        else:
+            return element.render()
+
     def render(self):
         matrix: List[Buffer] = []
         temp_pos = 0
-        for buffer in sorted(self.elements.call_elements_event("build"), key=lambda element: element.position.y):
+        temp_elements = self.elements.get_elements_collection()
+        for element in temp_elements.get_elements_collection(lambda element: isinstance(element, Widget)):
+            element.event.create.render((lambda element: lambda: self.style(element))(element))
+        for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.y):
             buffer.position.y = temp_pos
             temp_pos += buffer.size.y
             matrix.append(buffer)
