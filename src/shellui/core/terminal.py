@@ -28,15 +28,16 @@ class Terminal:
         """
         self.stdscr.clear()
 
-        def _recursive_buffer_iteration(method: Callable, position: Position) -> list:
-            method_return = method()
+        def _recursive_buffer_iteration(buffer: Buffer) -> list:
+            method_return: Union[str, List[Buffer]] = buffer.function()
             if isinstance(method_return, list):
                 for _bottom_buffer in method_return:
-                    yield from _recursive_buffer_iteration(_bottom_buffer.function, Position(*[a + b for a, b in zip(_bottom_buffer.position, position)]))
+                    _bottom_buffer.position = Position(*[a + b for a, b in zip(_bottom_buffer.position, buffer.position)])
+                    yield from _recursive_buffer_iteration(_bottom_buffer)
             else:
-                yield [position.y, position.x, method_return]
+                yield [buffer.position.y, buffer.position.x, method_return]
 
-        for string_args in _recursive_buffer_iteration(self._buffer.function, self._buffer.position):
+        for string_args in _recursive_buffer_iteration(self._buffer):
             self.stdscr.addstr(*string_args)
         self.stdscr.refresh()
 
