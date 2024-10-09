@@ -1,4 +1,4 @@
-from . import List, Callable, Buffer, Position
+from . import List, Union, Buffer, Position
 from .. import logging
 import curses
 
@@ -48,3 +48,6 @@ class Terminal:
         :return: Key char
         """
         return self.stdscr.getch()
+
+    def close(self):
+        curses.endwin()
