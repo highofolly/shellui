@@ -11,17 +11,19 @@ class Widget(AbstractWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.text = kwargs.pop("text", "")
+        self.text: str = ""
+        self.set_text(kwargs.pop("text", ""))
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
 
     def update(self): ...
     def render(self): ...
     def on_click(self) -> Any: ...
 
-    def build(self):
-        lines = self.text.split('\n')
-        self.size = Position(max(len(line) for line in lines), len(lines))
-        return super().build()
+    def set_text(self, text: str):
+        self.text = text
+        if not self.flags.is_fixed_size:
+            lines = self.text.split('\n')
+            self.size = Position(max(len(line) for line in lines), len(lines))
 
 
 class Label(Widget):
