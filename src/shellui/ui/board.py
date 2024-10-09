@@ -11,14 +11,12 @@ class Widget(AbstractWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.text = kwargs.pop("text", "")
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
 
     def update(self): ...
     def render(self): ...
     def on_click(self) -> Any: ...
-
-    def select(self):
-        super(Widget, self).select()
 
     def build(self):
         lines = self.text.split('\n')
@@ -34,7 +32,6 @@ class Label(Widget):
 
     def __init__(self, *args, **kwargs):
         super(Label, self).__init__(*args, **kwargs)
-        self.text = kwargs.pop("text")
         self.flags.is_active_element = False
 
     def render(self):
@@ -49,7 +46,6 @@ class Button(Widget):
 
     def __init__(self, *args, **kwargs):
         super(Button, self).__init__(*args, **kwargs)
-        self.text = kwargs.pop("text")
         self.flags.is_active_element = True
 
     def render(self):
