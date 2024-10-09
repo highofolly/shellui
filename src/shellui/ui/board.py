@@ -126,3 +126,22 @@ class VLayout(Layout):
             temp_pos += buffer.size.y
             matrix.append(buffer)
         return matrix
+
+
+class HLayout(Layout):
+    """
+    Represents a vertical layout
+    """
+    class_base_tag = "HLayout"
+
+    def render(self):
+        matrix: List[Buffer] = []
+        temp_pos = 0
+        temp_elements = self.elements.get_elements_collection()
+        for element in temp_elements.get_elements_collection(lambda element: isinstance(element, Widget)):
+            element.event.create.render((lambda element: lambda: self.style(element))(element))
+        for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.x):
+            buffer.position.x = temp_pos
+            temp_pos += buffer.size.x + len(self.cursor_skin)
+            matrix.append(buffer)
+        return matrix
