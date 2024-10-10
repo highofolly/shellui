@@ -109,6 +109,27 @@ class Button(Widget):
         return self.text
 
 
+class CheckBox(Widget):
+    """
+    Represents graphical checkbox element
+    """
+    class_base_tag = "CheckBox"
+
+    def __init__(self, *args, **kwargs):
+        super(CheckBox, self).__init__(*args, **kwargs)
+        self.flags.is_active_element = True
+        self.flags.is_checked = False
+
+    def on_click(self):
+        self.flags.is_checked = False if self.is_checked() else True
+
+    def is_checked(self):
+        return self.flags.is_checked
+
+    def render(self):
+        return f"[*] {self.text}" if self.is_checked() else f"[ ] {self.text}"
+
+
 class VLayout(Layout):
     """
     Represents a vertical layout
