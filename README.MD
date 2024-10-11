@@ -8,7 +8,7 @@ help you build interactive applications effortlessly.
 
 At the moment, download is only available via git:
 ```
-git clone https://github.com/highofolly/shellui.git
+pip install shellui
 ```
 
 ## DOCUMENTATION
