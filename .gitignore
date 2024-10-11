@@ -160,4 +160,9 @@ cython_debug/
 .idea/
 
 *.bat
-src/test.py
+Makefile
+
+*.test
+*.test.*
+test.*
+test
