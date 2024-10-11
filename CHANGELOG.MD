@@ -1,4 +1,19 @@
 
+v0.3.0 / 2024-10-11
+==================
+
+### added:
+  * build:
+    * requirements and setup configuration file in root directory
+    * metadata in form of headers in shellui module
+  * docs:
+    * automatically created docstring documentation via sphinx in docs/ directory
+### changed:
+  * build:
+    * list of ignored files for git in .gitignore
+  * docs:
+    * update item INSTALLATION in README.MD file
+
 v0.3.0-beta.1 / 2024-10-10
 ==================
 
