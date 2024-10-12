@@ -1,23 +1,17 @@
-from . import Callable, List, Any, dataclass
-from .. import logging
-
-
-@dataclass
-class keyboardEvent:
-    function: Callable
-    _lambda: Callable
+from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit, KeyboardEvent
+from ..common.debug import logging
 
 
 class KeyboardManager:
-    def __init__(self, parent):
+    def __init__(self, parent: BaseElementInterface = None):
         """
         :param parent: Parent class object
         """
-        self.parent: object = parent
-        self.keyboard_events: List[keyboardEvent] = []
+        self.parent: BaseElementInterface = parent or BaseElementInterface
+        self.keyboard_events: List[KeyboardEvent] = []
 
-    def add_keyboard_event(self, function: Callable, _lambda: Callable = lambda key_char: True) -> keyboardEvent:
-        event = keyboardEvent(function, _lambda)
+    def add_keyboard_event(self, function: Callable, _lambda: Callable = lambda key_char: True) -> KeyboardEvent:
+        event = KeyboardEvent(function, _lambda)
         self.keyboard_events.append(event)
         return event
 
@@ -25,7 +19,7 @@ class KeyboardManager:
         return_list: List[Any] = []
         for event in self.keyboard_events:
             if event._lambda(key_char):
-                logging.keyboard(f"CLASS <{self.parent.__class__.__name__}> CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
+                logging.keyboard(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
                 return_list.append(event.function())
         return return_list
 
@@ -48,44 +42,6 @@ class FlagsManager:
     def __delattr__(self, item):
         if item in self.flags:
             del self.flags[item]
-
-
-class EventUnit:
-    """
-    Represents event unit that associated function with EventManager class
-    """
-    def __init__(self, parent):
-        """
-        :param parent: Parent class object
-        """
-        self.parent: object = parent
-
-    def __setfunc__(self, func: Callable = None):
-        """
-        Sets the function for given event
-
-        :param func: Function that will be called when the event is triggered
-        """
-        self.func: Callable = func
-
-    def __call__(self, *args, **kwargs):
-        """
-        Calls function with the passed arguments
-
-        :param args: Positional arguments that will be passed to function
-        :param kwargs: Named arguments that will be passed to function
-        """
-        args_str = ', '.join(repr(arg) for arg in args[:2]) or None
-        if len(args) > 2:
-            args_str += ', ...'
-
-        kwargs_items = list(kwargs.items())
-        kwargs_str = ', '.join(f'{key}: {repr(value)}' for key, value in kwargs_items[:2]) or None
-        if len(kwargs_items) > 2:
-            kwargs_str += ', ...'
-
-        logging.event(f"CLASS <{self.parent.__class__.__name__}> CALLS EVENT <{self.func.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
-        return self.func(*args, **kwargs)
 
 
 class EventManager:

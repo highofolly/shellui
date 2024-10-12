@@ -1,16 +1,124 @@
+from .interfaces import BaseElementInterface
+from .debug import logging
 from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
 from typing import *
-from .interfaces import *
+from enum import Enum
+
+
+class ElementState(Enum):
+    MISSED      = 0
+    SELECTED    = 1
 
 
 @dataclass
-class Position:
+class BaseDimensions(ABC):
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
+    def __add__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__class__(self.x + other.x, self.y + other.y)
+        return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__class__(self.x - other.x, self.y - other.y)
+        return NotImplemented
+
+    def __mul__(self, other):
+        if isinstance(other, (int, float)):
+            return self.__class__(self.x * other, self.y * other)
+        return NotImplemented
+
+    def __truediv__(self, other):
+        if isinstance(other, (int, float)):
+            return self.__class__(self.x / other, self.y / other)
+        return NotImplemented
+
+    def __floordiv__(self, other):
+        if isinstance(other, (int, float)):
+            return self.__class__(self.x // other, self.y // other)
+        return NotImplemented
+
+    def __mod__(self, other):
+        if isinstance(other, (int, float)):
+            return self.__class__(self.x % other, self.y % other)
+        return NotImplemented
+
+    def __neg__(self):
+        return self.__class__(-self.x, -self.y)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.x == other.x and self.y == other.y
+        return NotImplemented
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
+
+
+@dataclass
+class Position(BaseDimensions):
     x: int
     y: int
 
-    def __iter__(self):
-        for i in range(2):
-            yield self.x if i == 0 else self.y
+
+@dataclass
+class Size(BaseDimensions):
+    height: int
+    width: int
+
+    @property
+    def x(self):
+        return self.width
+
+    @property
+    def y(self):
+        return self
+
+
+@dataclass
+class KeyboardEvent:
+    function: Callable
+    _lambda: Callable
+
+
+@dataclass
+class EventUnit:
+    """
+    Represents event unit that associated function with EventManager class
+    """
+    parent: BaseElementInterface = BaseElementInterface
+    """Parent class object"""
+
+    def __setfunc__(self, func: Callable = None):
+        """
+        Sets the function for given event
+
+        :param func: Function that will be called when the event is triggered
+        """
+        self.func: Callable = func
+
+    def __call__(self, *args, **kwargs):
+        """
+        Calls function with the passed arguments
+
+        :param args: Positional arguments that will be passed to function
+        :param kwargs: Named arguments that will be passed to function
+        """
+        args_str = ', '.join(repr(arg) for arg in args[:2]) or None
+        if len(args) > 2:
+            args_str += ', ...'
+
+        kwargs_items = list(kwargs.items())
+        kwargs_str = ', '.join(f'{key}: {repr(value)}' for key, value in kwargs_items[:2]) or None
+        if len(kwargs_items) > 2:
+            kwargs_str += ', ...'
+
+        logging.event(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS EVENT <{self.func.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
+        return self.func(*args, **kwargs)
 
 
 @dataclass
