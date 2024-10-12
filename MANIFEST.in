@@ -1,0 +1,5 @@
+include README.MD
+include LICENSE
+include requirements.txt
+graft src/shellui
+global-exclude __pycache__ *.py[cod]
