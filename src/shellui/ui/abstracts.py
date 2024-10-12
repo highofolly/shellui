@@ -26,6 +26,7 @@ class BaseElement(BaseElementInterface):
         self.flags: FlagsManager = FlagsManager()
         self.keyboard: KeyboardManager = KeyboardManager(self)
         self.event: EventManager = EventManager(self)
+        self.event.create.get_size(self.get_size)
         self.event.create.update(self.update)
         self.event.create.render(self.render)
         self.event.create.build(self.build)
@@ -52,6 +53,10 @@ class BaseElement(BaseElementInterface):
 
     def set_floating_size(self):
         self.flags.is_fixed_size = False
+
+    @abstractmethod
+    def get_size(self) -> Position:
+        raise NotImplementedError
 
     @abstractmethod
     def update(self) -> Any:
@@ -129,10 +134,6 @@ class AbstractLayout(BaseElement):
             self.elements.extend(args)
             return_element = Collection()
             return_element.extend(args)
-        if not self.flags.is_fixed_size:
-            self.size.y += return_element.size.y
-            if return_element.size.x > self.size.x:
-                self.size.x = return_element.size.x
         return return_element
 
     def search_elements_by_tag(self, tag: str) -> Collection:

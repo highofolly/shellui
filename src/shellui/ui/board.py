@@ -18,12 +18,10 @@ class Widget(AbstractWidget):
     def update(self): ...
     def render(self): ...
     def on_click(self) -> Any: ...
+    def get_size(self) -> Position: ...
 
     def set_text(self, text: str):
         self.text = text
-        if not self.flags.is_fixed_size:
-            lines = self.text.split('\n')
-            self.size = Position(max(len(line) for line in lines), len(lines))
 
 
 class Layout(AbstractLayout):
@@ -66,8 +64,21 @@ class Layout(AbstractLayout):
         self.elements.call_elements_event("deselect", lambda element: element.flags.is_active_element)
         return super().deselect()
 
+    def get_size(self):
+        self.size = Position(0, 0)
+        for element in self.elements:
+            self.size.y += element.size.y
+            if element.size.x > self.size.x:
+                self.size.x = element.size.x
+        return self.size
+
     def update(self):
         return_list = super().update()
+
+        if not self.flags.is_fixed_size:
+            self.event.call.get_size()
+        self.elements.call_elements_event("get_size", lambda element: not element.flags.is_fixed_size)
+
         self.event.call.deselect()
         self.event.call.select()
         return return_list
@@ -91,6 +102,11 @@ class Label(Widget):
         super(Label, self).__init__(*args, **kwargs)
         self.flags.is_active_element = False
 
+    def get_size(self):
+        lines = self.text.split('\n')
+        self.size = Position(max(len(line) for line in lines), len(lines))
+        return self.size
+
     def render(self):
         return self.text
 
@@ -104,6 +120,11 @@ class Button(Widget):
     def __init__(self, *args, **kwargs):
         super(Button, self).__init__(*args, **kwargs)
         self.flags.is_active_element = True
+
+    def get_size(self):
+        lines = self.text.split('\n')
+        self.size = Position(max(len(line) for line in lines), len(lines))
+        return self.size
 
     def render(self):
         return self.text
@@ -119,6 +140,11 @@ class CheckBox(Widget):
         super(CheckBox, self).__init__(*args, **kwargs)
         self.flags.is_active_element = True
         self.flags.is_checked = False
+
+    def get_size(self):
+        lines = self.text.split('\n')
+        self.size = Position(4 + max(len(line) for line in lines), len(lines))
+        return self.size
 
     def on_click(self):
         self.flags.is_checked = False if self.is_checked() else True
