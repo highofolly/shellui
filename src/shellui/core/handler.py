@@ -25,14 +25,18 @@ class KeyboardManager:
 
 
 class FlagsManager:
-    def __init__(self):
-        self.flags = {}
+    def __init__(self, parent: BaseElementInterface):
+        self.parent: BaseElementInterface = parent or BaseElementInterface
+        self.flags: dict = {}
 
     def __getattr__(self, item):
-        return self.flags.get(item, None)
+        flag = self.flags.get(item, None)
+        if flag is None:
+            logging.warning(f"Flag <{item}> was not created")
+        return flag
 
     def __setattr__(self, key, value: bool):
-        if key == "flags":
+        if key in ["flags", "parent"]:
             super().__setattr__(key, value)
         else:
             if not isinstance(value, bool):
