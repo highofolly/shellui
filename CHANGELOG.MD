@@ -1,4 +1,11 @@
 
+v0.3.0.post1 / 2024-10-12
+==================
+
+### fixed:
+  * build:
+    * include README.MD, LICENSE and requirements.txt in build
+
 v0.3.0 / 2024-10-11
 ==================
 
