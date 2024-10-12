@@ -1,5 +1,5 @@
-from . import List, Union, Buffer, Position
-from .. import logging
+from ..common.types import List, Union, Buffer, Position
+from ..common.debug import logging
 import curses
 
 
