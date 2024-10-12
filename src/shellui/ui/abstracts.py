@@ -1,18 +1,17 @@
-from .. import logging
-from ..core import BaseElementInterface, EventManager, FlagsManager, KeyboardManager, Buffer, Position, Collection, Tuple, Any, Union, List, abstractmethod, overload
-from enum import Enum
+from ..common.types import Buffer, Position, Collection, ElementState, Tuple, Any, Union, List, overload, runtime_checkable, Protocol, ABC, abstractmethod
+from ..common.debug import logging
+from ..core.handler import EventManager, FlagsManager, KeyboardManager
 
 
-class ElementState(Enum):
-    MISSED      = 0
-    SELECTED    = 1
-
-
-class BaseElement(BaseElementInterface):
+class BaseElement(ABC):
     """
     Represents abstract base class for all interface elements and layouts
     """
     class_base_tag = "BaseElement"
+
+    @runtime_checkable
+    class BaseFlags(Protocol):
+        is_fixed_size: bool
 
     def __init__(self, *args, **kwargs):
         """
@@ -23,7 +22,7 @@ class BaseElement(BaseElementInterface):
         self.tag: str = kwargs.pop("tag", self.class_base_tag)
         self.state: ElementState = ElementState.MISSED
 
-        self.flags: FlagsManager = FlagsManager()
+        self.flags: BaseElement.BaseFlags = FlagsManager(self)
         self.keyboard: KeyboardManager = KeyboardManager(self)
         self.event: EventManager = EventManager(self)
         self.event.create.get_size(self.get_size)
@@ -33,7 +32,7 @@ class BaseElement(BaseElementInterface):
         self.event.create.select(self.select)
         self.event.create.deselect(self.deselect)
         self.flags.is_fixed_size = False
-        logging.create(f"CREATE CLASS <{self.__class__.__name__}> (agrs={args}, kwargs={kwargs})")
+        logging.create(f"CREATE CLASS <{self.__class__.__name__}> (tag={self.tag}) (agrs={args}, kwargs={kwargs})")
 
     def select(self) -> None:
         """

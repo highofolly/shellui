@@ -1,6 +1,11 @@
-from . import AbstractWidget, AbstractLayout, ElementState
-from .. import logging
-from ..core import curses, List, Any, Position, Buffer
+from .abstracts import AbstractWidget, AbstractLayout, ElementState
+from ..common.debug import logging
+from ..common.types import List, Any, Position, Buffer
+import curses
+
+
+class BaseFlags(AbstractWidget.BaseFlags):
+    is_active_element: bool
 
 
 class Widget(AbstractWidget):
@@ -11,7 +16,9 @@ class Widget(AbstractWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.flags: Widget.BaseFlags = self.flags
         self.text: str = ""
+        self.flags.is_active_element = False
         self.set_text(kwargs.pop("text", ""))
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
 
@@ -29,6 +36,7 @@ class Layout(AbstractLayout):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.flags: Widget.BaseFlags = self.flags
         self.cursor: int = 0
         self.cursor_skin: str = kwargs.pop("cursor_skin", "> ")
         self.flags.is_active_element = True
@@ -97,10 +105,6 @@ class Label(Widget):
     Represents graphic text label element
     """
     class_base_tag = "Label"
-
-    def __init__(self, *args, **kwargs):
-        super(Label, self).__init__(*args, **kwargs)
-        self.flags.is_active_element = False
 
     def get_size(self):
         lines = self.text.split('\n')
