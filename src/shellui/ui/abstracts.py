@@ -50,9 +50,26 @@ class BaseElement(ABC):
         """
         self.state = ElementState.MISSED
 
-    def set_fixed_size(self, size: Union[Position, Tuple[int, int]]):
+    @overload
+    def set_fixed_size(self, size: Union[Size, Tuple[int, int], List[int]]) -> None:
+        pass
+
+    @overload
+    def set_fixed_size(self, width: int, height: int) -> None:
+        pass
+
+    def set_fixed_size(self, *args, **kwargs):
         self.flags.is_fixed_size = True
-        self.size = size if isinstance(size, Position) else Position(*size)
+        width, height = kwargs.pop("width", None), kwargs.pop("height", None)
+        size = kwargs.pop("size", None)
+        if len(args) == 1:
+            self.size = Size(*args[0])
+        elif len(args) == 2:
+            self.size = Size(*args)
+        elif width and height:
+            self.size = Size(width, height)
+        elif size:
+            self.size = Size(*size)
 
     def set_floating_size(self):
         self.flags.is_fixed_size = False
