@@ -1,4 +1,4 @@
-from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit, KeyboardEvent
+from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit, KeyboardEvent, TypedDict
 from ..common.debug import logging
 
 
@@ -24,28 +24,30 @@ class KeyboardManager:
         return return_list
 
 
-class FlagsManager:
+class FlagsManager(dict):
     def __init__(self, parent: BaseElementInterface):
+        super(FlagsManager, self).__init__()
         self.parent: BaseElementInterface = parent or BaseElementInterface
-        self.flags: dict = {}
 
-    def __getattr__(self, item):
-        flag = self.flags.get(item, None)
+    def set_flag(self, key: str, value: Any) -> None:
+        self.__setattr__(key, value)
+
+    def get_flag(self, key: str) -> bool:
+        return self.__getattr__(key)
+
+    def __getattr__(self, key) -> bool:
+        flag = self.get(key, None)
         if flag is None:
-            logging.warning(f"Flag <{item}> was not created")
+            logging.warning(f"CLASS FLAG <{self.parent.__class__.__name__}> (tag={self.parent.tag}) <{key}> WAS NOT CREATED!")
         return flag
 
-    def __setattr__(self, key, value: bool):
+    def __setattr__(self, key: str, value: bool) -> None:
         if key in ["flags", "parent"]:
             super().__setattr__(key, value)
         else:
             if not isinstance(value, bool):
                 raise TypeError(f"Expected type 'bool', got '{type(value)}' instead")
-            self.flags[key] = value
-
-    def __delattr__(self, item):
-        if item in self.flags:
-            del self.flags[item]
+            self[key] = value
 
 
 class EventManager:
