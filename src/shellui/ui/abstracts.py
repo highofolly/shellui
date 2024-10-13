@@ -36,6 +36,10 @@ class BaseElement(ABC):
         self.event.create.select(self.select)
         self.event.create.deselect(self.deselect)
         self.flags.is_fixed_size = False
+
+        if "flags" in kwargs:
+            for key, value in kwargs["flags"].items():
+                self.flags.set_flag("key", value)
         logging.create(f"CREATE CLASS <{self.__class__.__name__}> (tag={self.tag}) (agrs={args}, kwargs={kwargs})")
 
     def select(self) -> None:
