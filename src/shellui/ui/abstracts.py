@@ -126,6 +126,7 @@ class AbstractLayout(BaseElement):
     def __init__(self, *args, **kwargs):
         super(AbstractLayout, self).__init__(*args, **kwargs)
         self.elements: Collection = Collection()
+        self.event.create.get_by_tag(self.search_elements_by_tag)
 
     @overload
     def add_elements(self, element: BaseElement, position: Union[Position, Tuple[int, int]] = None) -> BaseElement:
@@ -162,6 +163,7 @@ class AbstractLayout(BaseElement):
         return return_element
 
     def search_elements_by_tag(self, tag: str) -> Collection:
+        self.elements.call_elements_event("get_by_tag", lambda element: isinstance(element, AbstractLayout), args=[tag])
         return self.elements.get_elements_collection(lambda element: element.tag == tag)
 
     def update(self):
