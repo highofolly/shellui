@@ -11,9 +11,12 @@ def create_level(level: int, name: str):
     return logging_message
 
 
-logging.event = create_level(5, "EVENT")
-logging.keyboard = create_level(6, "KEYBOARD")
-logging.create = create_level(7, "CREATE")
+EVENT = 5
+logging.event = create_level(EVENT, "EVENT")
+KEYBOARD = 6
+logging.keyboard = create_level(KEYBOARD, "KEYBOARD")
+CREATE = 7
+logging.create = create_level(CREATE, "CREATE")
 
 
 def debug_start(file_name: str = "shellui_debug.log", logging_level: int = logging.DEBUG, save_critical_error: bool = True):
