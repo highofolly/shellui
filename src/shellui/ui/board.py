@@ -1,10 +1,10 @@
-from .abstracts import AbstractWidget, AbstractLayout, ElementState
+from .abstracts import AbstractWidget, AbstractLayout, ElementState, BaseElement
 from ..common.debug import logging
-from ..common.types import List, Any, Position, Buffer
+from ..common.types import List, Any, Size, Buffer
 import curses
 
 
-class BaseFlags(AbstractWidget.BaseFlags):
+class BaseFlags(BaseElement.BaseFlags):
     is_active_element: bool
 
 
@@ -25,7 +25,7 @@ class Widget(AbstractWidget):
     def update(self): ...
     def render(self): ...
     def on_click(self) -> Any: ...
-    def get_size(self) -> Position: ...
+    def get_size(self) -> Size: ...
 
     def set_text(self, text: str):
         self.text = text
@@ -46,7 +46,7 @@ class Layout(AbstractLayout):
         self.keyboard.add_keyboard_event(self.key_up, lambda key_char: key_char in self.UP_KEYS)
         self.keyboard.add_keyboard_event(self.key_down, lambda key_char: key_char in self.DOWN_KEYS)
 
-    def set_cursor_skin(self, skin: str):
+    def set_cursor_skin(self, skin: str) -> None:
         self.cursor_skin = skin
 
     def on_click(self) -> Any:
@@ -73,19 +73,20 @@ class Layout(AbstractLayout):
         return super().deselect()
 
     def get_size(self):
-        self.size = Position(0, 0)
+        self.size = Size(0, 0)
+        element: BaseElement
         for element in self.elements:
-            self.size.y += element.size.y
-            if element.size.x > self.size.x:
-                self.size.x = element.size.x
+            self.size.height += element.size.height
+            if element.size.width > self.size.width:
+                self.size.width = element.size.width
         return self.size
 
     def update(self):
         return_list = super().update()
 
+        self.elements.call_elements_event("get_size", lambda element: not element.flags.is_fixed_size)
         if not self.flags.is_fixed_size:
             self.event.call.get_size()
-        self.elements.call_elements_event("get_size", lambda element: not element.flags.is_fixed_size)
 
         self.event.call.deselect()
         self.event.call.select()
@@ -108,7 +109,7 @@ class Label(Widget):
 
     def get_size(self):
         lines = self.text.split('\n')
-        self.size = Position(max(len(line) for line in lines), len(lines))
+        self.size = Size(max(len(line) for line in lines), len(lines))
         return self.size
 
     def render(self):
@@ -127,7 +128,7 @@ class Button(Widget):
 
     def get_size(self):
         lines = self.text.split('\n')
-        self.size = Position(max(len(line) for line in lines), len(lines))
+        self.size = Size(max(len(line) for line in lines), len(lines))
         return self.size
 
     def render(self):
@@ -147,7 +148,7 @@ class CheckBox(Widget):
 
     def get_size(self):
         lines = self.text.split('\n')
-        self.size = Position(4 + max(len(line) for line in lines), len(lines))
+        self.size = Size(4 + max(len(line) for line in lines), len(lines))
         return self.size
 
     def on_click(self):
@@ -174,7 +175,7 @@ class VLayout(Layout):
             element.event.create.render((lambda element: lambda: self.style(element))(element))
         for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.y):
             buffer.position.y = temp_pos
-            temp_pos += buffer.size.y
+            temp_pos += buffer.size.height
             matrix.append(buffer)
         return matrix
 
@@ -193,6 +194,6 @@ class HLayout(Layout):
             element.event.create.render((lambda element: lambda: self.style(element))(element))
         for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.x):
             buffer.position.x = temp_pos
-            temp_pos += buffer.size.x + len(self.cursor_skin)
+            temp_pos += buffer.size.width + len(self.cursor_skin)
             matrix.append(buffer)
         return matrix

@@ -1,4 +1,4 @@
-from ..common.types import Buffer, Position, Collection, ElementState, Tuple, Any, Union, List, overload, runtime_checkable, Protocol, ABC, abstractmethod
+from ..common.types import Buffer, Position, Size, Collection, ElementState, Tuple, Any, Union, List, overload, runtime_checkable, Protocol, ABC, abstractmethod
 from ..common.debug import logging
 from ..core.handler import EventManager, FlagsManager, KeyboardManager
 
@@ -22,7 +22,7 @@ class BaseElement(ABC):
         :param position: Element position in [x, y] format
         """
         self.position: Position = Position(*kwargs.pop("position", [0, 0]))
-        self.size: Position = Position(0, 0)
+        self.size: Size = Size(0, 0)
         self.tag: str = kwargs.pop("tag", self.class_base_tag)
         self.state: ElementState = ElementState.MISSED
 
@@ -79,7 +79,7 @@ class BaseElement(ABC):
         self.flags.is_fixed_size = False
 
     @abstractmethod
-    def get_size(self) -> Position:
+    def get_size(self) -> Size:
         raise NotImplementedError
 
     @abstractmethod
