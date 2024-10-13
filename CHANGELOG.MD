@@ -1,4 +1,32 @@
 
+v0.3.1-beta.1 / 2024-10-13
+==================
+
+### added:
+  * shellui.common package
+  * elements:
+    * flags parameter to BaseElement class
+    * overload methods for set_fixed_size method
+    * BaseFlags interface for BaseElement class
+  * handler:
+    * parent attribute to FlagsManager class
+    * set_flag and get_flag methods to FlagsManager class
+  * constants logging levels EVENT, KEYBOARD and CREATE
+  * interface classes in common.interfaces module
+  * event get_size in BaseElement class calculates size of Layouts/Widgets and is called in Layout.update method
+### changed:
+  * elements:
+    * search_elements_by_tag method recursively accepts subelement tags
+  * handler:
+    * add interface methods to BaseFlags class
+    * now FlagsManager class inherits dict class
+  * debug:
+    * debug_start method
+    * move debug functions to common.debug module
+  *  move EventUnit and KeyboardEvent dataclasses to common.types module
+### fixed:
+  * add_elements method in AbstractLayout class
+
 v0.3.0.post1 / 2024-10-12
 ==================
 
