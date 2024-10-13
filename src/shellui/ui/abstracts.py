@@ -147,6 +147,7 @@ class AbstractLayout(BaseElement):
         """
 
     def add_elements(self, *args, **kwargs):
+        return_element = None
         if len(args) == 1 or kwargs.get("element", None):
             position = kwargs.get("position", None)
             return_element = args[0]
