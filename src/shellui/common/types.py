@@ -12,71 +12,80 @@ class ElementState(Enum):
 
 
 @dataclass
-class BaseDimensions(ABC):
+class Dimensions(ABC):
     def __iter__(self):
-        yield self.x
-        yield self.y
+        yield self._x
+        yield self._y
 
     def __add__(self, other):
         if isinstance(other, self.__class__):
-            return self.__class__(self.x + other.x, self.y + other.y)
+            return self.__class__(self._x + other._x, self._y + other._y)
+        elif isinstance(other, (int, float)):
+            return self.__class__(self._x + other, self._y + other)
         return NotImplemented
 
     def __sub__(self, other):
         if isinstance(other, self.__class__):
-            return self.__class__(self.x - other.x, self.y - other.y)
+            return self.__class__(self._x - other._x, self._y - other._y)
+        elif isinstance(other, (int, float)):
+            return self.__class__(self._x - other, self._y - other)
         return NotImplemented
 
     def __mul__(self, other):
         if isinstance(other, (int, float)):
-            return self.__class__(self.x * other, self.y * other)
+            return self.__class__(self._x * other, self._y * other)
         return NotImplemented
 
     def __truediv__(self, other):
         if isinstance(other, (int, float)):
-            return self.__class__(self.x / other, self.y / other)
+            return self.__class__(self._x / other, self._y / other)
         return NotImplemented
 
     def __floordiv__(self, other):
         if isinstance(other, (int, float)):
-            return self.__class__(self.x // other, self.y // other)
+            return self.__class__(self._x // other, self._y // other)
         return NotImplemented
 
     def __mod__(self, other):
         if isinstance(other, (int, float)):
-            return self.__class__(self.x % other, self.y % other)
+            return self.__class__(self._x % other, self._y % other)
         return NotImplemented
 
     def __neg__(self):
-        return self.__class__(-self.x, -self.y)
+        return self.__class__(-self._x, -self._y)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.x == other.x and self.y == other.y
+            return self._x == other._x and self._y == other._y
         return NotImplemented
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
 
 @dataclass
-class Position(BaseDimensions):
+class Position(Dimensions):
     x: int
     y: int
 
-
-@dataclass
-class Size(BaseDimensions):
-    height: int
-    width: int
+    @property
+    def _x(self):
+        return self.x
 
     @property
-    def x(self):
+    def _y(self):
+        return self.y
+
+
+@dataclass
+class Size(Dimensions):
+    width: int
+    height: int
+
+    @property
+    def _x(self):
         return self.width
 
     @property
-    def y(self):
-        return self
+    def _y(self):
+        return self.height
 
 
 @dataclass
@@ -130,7 +139,7 @@ class Buffer:
     """Method that will be called to get data"""
     position: Position = None
     """Position (x, y) on screen to display data"""
-    size: Position = None
+    size: Size = None
 
 
 @dataclass
