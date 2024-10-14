@@ -173,52 +173,52 @@ class Collection(list):
     def set_elements_attribute(self,
                                item: str,
                                value: Any,
-                               _lambda: Callable = lambda element: True) -> Self:
+                               rule: Callable = lambda element: True) -> Self:
         """
         Sets attribute value for elements that match condition
 
         :param item: Attribute name to be set
         :param value: Value to set for attribute
-        :param _lambda: Condition function to filter elements
+        :param rule: Condition function to filter elements
         :return: Filtered collection
         """
         return_list: Collection = Collection()
         for element in self:
-            if _lambda(element):
+            if rule(element):
                 setattr(element, item, value)
                 return_list.append(element)
         return return_list
 
     def get_elements_collection(self,
-                                _lambda: Callable = lambda element: True) -> Self:
+                                rule: Callable = lambda element: True) -> Self:
         """
         Returns a elements collection that match condition
 
-        :param _lambda: Condition function to filter elements
+        :param rule: Condition function to filter elements
         :return: Filtered collection
         """
         return_list: Collection = Collection()
         for element in self:
-            if _lambda(element):
+            if rule(element):
                 return_list.append(element)
         return return_list
 
     def call_elements_event(self,
                             event: str,
-                            _lambda: Callable = lambda element: True,
+                            rule: Callable = lambda element: True,
                             args: List = None,
                             kwargs: dict = None) -> List[Any]:
         """
         Raises an event on elements that match a condition with the given arguments
 
         :param event: Event name
-        :param _lambda: Condition function to filter elements
+        :param rule: Condition function to filter elements
         :param args: Positional arguments that will be passed to event
         :param kwargs: Named arguments that will be passed to event
         :return: Returned values of filtered collection elements
         """
         args, kwargs = args or [], kwargs or {}
         return_list: List[Any] = []
-        for element in self.get_elements_collection(_lambda):
+        for element in self.get_elements_collection(rule):
             return_list.append(getattr(element.event.call, event)(*args, **kwargs))
         return return_list
