@@ -91,7 +91,7 @@ class Size(Dimensions):
 @dataclass
 class KeyboardEvent:
     function: Callable
-    _lambda: Callable
+    rule: Callable
 
 
 @dataclass

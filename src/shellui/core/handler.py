@@ -18,7 +18,7 @@ class KeyboardManager:
     def key_pressed(self, key_char) -> List[Any]:
         return_list: List[Any] = []
         for event in self.keyboard_events:
-            if event._lambda(key_char):
+            if event.rule(key_char):
                 logging.keyboard(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
                 return_list.append(event.function())
         return return_list
