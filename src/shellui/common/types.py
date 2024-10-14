@@ -102,13 +102,13 @@ class EventUnit:
     parent: BaseElementInterface = BaseElementInterface
     """Parent class object"""
 
-    def __setfunc__(self, func: Callable = None):
+    def __setfunc__(self, function: Callable = None):
         """
         Sets the function for given event
 
-        :param func: Function that will be called when the event is triggered
+        :param function: Function that will be called when the event is triggered
         """
-        self.func: Callable = func
+        self.function: Callable = function
 
     def __call__(self, *args, **kwargs):
         """
@@ -126,8 +126,8 @@ class EventUnit:
         if len(kwargs_items) > 2:
             kwargs_str += ', ...'
 
-        logging.event(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS EVENT <{self.func.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
-        return self.func(*args, **kwargs)
+        logging.event(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS EVENT <{self.function.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
+        return self.function(*args, **kwargs)
 
 
 @dataclass
