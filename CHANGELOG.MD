@@ -1,4 +1,15 @@
 
+v0.3.1 / 2024-10-19
+==================
+
+## minor changes:
+### updated:
+* README.MD file
+* requirements parameter in setup.py
+* sphinx documentation
+* docstring in terminal and types modules
+* .readthedocs.yaml file
+
 v0.3.1-beta.1 / 2024-10-13
 ==================
 
