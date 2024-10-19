@@ -5,7 +5,7 @@ import curses
 
 class Terminal:
     """
-    Manages interface for working with text-based user interface
+    Manages interface for working with text-based user interface.
     """
     def __init__(self):
         self._buffer: Buffer
@@ -16,15 +16,19 @@ class Terminal:
 
     def set_buffer(self, buffer: Buffer) -> None:
         """
-        Sets rendering buffer
+        Sets rendering buffer.
 
         :param buffer: Rendering buffer
+        :type buffer: Buffer
+        :rtype: None
         """
         self._buffer = buffer
 
     def draw(self) -> None:
         """
-        Clears screen and draws buffer contents to the screen
+        Clears screen and draws buffer contents to the screen.
+
+        :rtype: None
         """
         self.stdscr.clear()
 
@@ -43,11 +47,17 @@ class Terminal:
 
     def read(self) -> int:
         """
-        Reads character entered by user
+        Reads character entered by user.
 
         :return: Key char
+        :rtype: int
         """
         return self.stdscr.getch()
 
     def close(self):
+        """
+        Closes the curses window and restores the terminal to its original state.
+
+        :rtype: None
+        """
         curses.endwin()
