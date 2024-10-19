@@ -10,5 +10,5 @@
 
 __author__ = "highofolly"
 __license__ = "MIT"
-__version__ = "0.3.1b1"
+__version__ = "0.3.1"
 __email__ = "sw3atyspace@email.com"
