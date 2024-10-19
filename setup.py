@@ -1,5 +1,9 @@
 from setuptools import setup, find_packages
 from src.shellui import __version__, __author__, __email__, __license__
+import pathlib
+
+HERE = pathlib.Path(__file__).parent
+long_description = (HERE / "README.md").read_text()
 
 setup(
     name="shellui",
@@ -7,7 +11,7 @@ setup(
     author=__author__,
     author_email=__email__,
     description="library simplifies the creation of TUI (Text User Interface) in the terminal. Offers a clean and intuitive architecture to help you build interactive applications effortlessly.",
-    long_description=open("README.md").read(),
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/highofolly/shellui",
     packages=find_packages(where="src"),
