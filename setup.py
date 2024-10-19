@@ -3,7 +3,7 @@ from src.shellui import __version__, __author__, __email__, __license__
 import pathlib
 
 HERE = pathlib.Path(__file__).parent
-long_description = (HERE / "README.md").read_text()
+long_description = (HERE / "README.MD").read_text()
 
 setup(
     name="shellui",
@@ -17,6 +17,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     include_package_data=True,
+    package_data={"": ["README.MD"]},
     license=__license__,
     license_files=("LICENSE", ),
     install_requires=open("requirements.txt").read().splitlines(),
