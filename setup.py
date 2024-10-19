@@ -1,9 +1,14 @@
 from setuptools import setup, find_packages
 from src.shellui import __version__, __author__, __email__, __license__
-import pathlib
+import pathlib, sys
 
 HERE = pathlib.Path(__file__).parent
 long_description = (HERE / "README.MD").read_text()
+
+win_requirements = []
+if sys.platform.startswith("win"):
+    win_requirements.append("windows-curses>=2.3.3")
+
 
 setup(
     name="shellui",
@@ -20,7 +25,7 @@ setup(
     package_data={"": ["README.MD"]},
     license=__license__,
     license_files=("LICENSE", ),
-    install_requires=open("requirements.txt").read().splitlines(),
+    install_requires=open("requirements.txt").read().splitlines() + win_requirements,
     classifiers=[
         "Programming Language :: Python :: 3.12",
         "License :: OSI Approved :: MIT License",
