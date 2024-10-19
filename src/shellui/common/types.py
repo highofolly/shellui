@@ -7,12 +7,25 @@ from enum import Enum
 
 
 class ElementState(Enum):
+    """
+    Enum representing the state of an element.
+
+    :param MISSED: Indicates that the element was missed
+    :type MISSED: int
+    :param SELECTED: Indicates that the element was selected
+    :type SELECTED: int
+    """
+
     MISSED      = 0
     SELECTED    = 1
 
 
 @dataclass
 class Dimensions(ABC):
+    """
+    Represent abstract base class of dimensions with basic arithmetic operations.
+    """
+
     def __iter__(self):
         yield self._x
         yield self._y
@@ -62,6 +75,14 @@ class Dimensions(ABC):
 
 @dataclass
 class Position(Dimensions):
+    """
+    Represents a position in a 2D space.
+
+    :param x: X-coordinate of the position.
+    :type x: int
+    :param y: Y-coordinate of the position.
+    :type y: int
+    """
     x: int
     y: int
 
@@ -76,6 +97,14 @@ class Position(Dimensions):
 
 @dataclass
 class Size(Dimensions):
+    """
+    Represents the size with width and height.
+
+    :param width: Width dimension.
+    :type width: int
+    :param height: Height dimension.
+    :type height: int
+    """
     width: int
     height: int
 
@@ -90,8 +119,17 @@ class Size(Dimensions):
 
 @dataclass
 class KeyboardEvent:
-    function: Callable
-    rule: Callable
+    """
+    Represents a keyboard event.
+
+    :param function: The function to be executed on the event.
+    :type function: typing.Callable[[], typing.Any]
+    :param rule: Condition function for filtering elements
+    :type rule: typing.Callable[[int], bool]
+    """
+
+    function: Callable[[], Any]
+    rule: Callable[[int], bool]
 
 
 @dataclass
@@ -104,18 +142,21 @@ class EventUnit:
 
     def __setfunc__(self, function: Callable = None):
         """
-        Sets the function for given event
+        Sets function for given event.
 
         :param function: Function that will be called when the event is triggered
+        :type function: Callable
         """
         self.function: Callable = function
 
     def __call__(self, *args, **kwargs):
         """
-        Calls function with the passed arguments
+        Calls function with the passed arguments.
 
         :param args: Positional arguments that will be passed to function
+        :type args: typing.List
         :param kwargs: Named arguments that will be passed to function
+        :type kwargs: typing.Dict
         """
         args_str = ', '.join(repr(arg) for arg in args[:2]) or None
         if len(args) > 2:
@@ -133,12 +174,17 @@ class EventUnit:
 @dataclass
 class Buffer:
     """
-    Represents a container for storing method and position used in text interface
+    Represents a container for storing method and position used in text interface.
+
+    :param function: Function that returns text or buffers list that will be printed in terminal
+    :type function: typing.Callable[[], Union[str, List[Self]]]
+    :param position: Position at which it will be printed in terminal
+    :type position: Position
+    :param size: Size of buffer in terminal
+    :type size: Size
     """
-    function: Callable = None
-    """Method that will be called to get data"""
+    function: Callable[[], Union[str, List[Self]]] = None
     position: Position = None
-    """Position (x, y) on screen to display data"""
     size: Size = None
 
 
@@ -146,8 +192,12 @@ class Buffer:
 class Collection(list):
     """
     Represents an extended list and provides type safety for elements that must implement BaseElementInterface interface
+
+    :param interface_level: Specifies the elements type that the collection can hold
+    :type interface_level: typing.Type
     """
     interface_level: Type = BaseElementInterface
+    """Specifies the elements type that the collection can hold"""
 
     def __init__(self, elements: List[interface_level] = None):
         if elements is None:
@@ -171,31 +221,37 @@ class Collection(list):
         super().insert(index, element)
 
     def set_elements_attribute(self,
-                               item: str,
+                               attribute: Text,
                                value: Any,
-                               rule: Callable = lambda element: True) -> Self:
+                               rule: Callable[[BaseElementInterface], bool] = lambda element: True) -> Self:
         """
-        Sets attribute value for elements that match condition
+        Sets attribute value for elements that satisfy rule condition.
 
-        :param item: Attribute name to be set
+        :param attribute: Attribute name to be set
+        :type attribute: typing.Text
         :param value: Value to set for attribute
-        :param rule: Condition function to filter elements
-        :return: Filtered collection
+        :type value: typing.Any
+        :param rule: Condition function for filtering elements
+        :type rule: typing.Callable[[BaseElementInterface], bool]
+        :return: Filtered collection of elements
+        :rtype: Collection
         """
         return_list: Collection = Collection()
         for element in self:
             if rule(element):
-                setattr(element, item, value)
+                setattr(element, attribute, value)
                 return_list.append(element)
         return return_list
 
     def get_elements_collection(self,
-                                rule: Callable = lambda element: True) -> Self:
+                                rule: Callable[[BaseElementInterface], bool] = lambda element: True) -> Self:
         """
-        Returns a elements collection that match condition
+        Returns filtered collection of elements that satisfy rule condition.
 
-        :param rule: Condition function to filter elements
-        :return: Filtered collection
+        :param rule: Condition function for filtering elements
+        :type rule: typing.Callable[[BaseElementInterface], bool]
+        :return: Filtered collection of elements
+        :rtype: Collection
         """
         return_list: Collection = Collection()
         for element in self:
@@ -204,18 +260,23 @@ class Collection(list):
         return return_list
 
     def call_elements_event(self,
-                            event: str,
-                            rule: Callable = lambda element: True,
+                            event: Text,
+                            rule: Callable[[BaseElementInterface], bool] = lambda element: True,
                             args: List = None,
-                            kwargs: dict = None) -> List[Any]:
+                            kwargs: Dict = None) -> List[Any]:
         """
-        Raises an event on elements that match a condition with the given arguments
+        Calls event with args and kwargs arguments on elements that satisfy rule condition.
 
         :param event: Event name
-        :param rule: Condition function to filter elements
+        :type event: typing.Text
+        :param rule: Condition function for filtering elements
+        :type rule: typing.Callable[[BaseElementInterface], bool]
         :param args: Positional arguments that will be passed to event
+        :type args: typing.List
         :param kwargs: Named arguments that will be passed to event
+        :type kwargs: typing.Dict
         :return: Returned values of filtered collection elements
+        :rtype: typing.List[Any]
         """
         args, kwargs = args or [], kwargs or {}
         return_list: List[Any] = []
