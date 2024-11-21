@@ -49,16 +49,16 @@ class Layout(AbstractLayout):
     def set_cursor_skin(self, skin: str) -> None:
         self.cursor_skin = skin
 
-    def on_click(self) -> Any:
+    def on_click(self, key_char) -> Any:
         return self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(10)
 
-    def key_up(self) -> bool:
+    def key_up(self, key_char) -> bool:
         if self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(curses.KEY_UP) != [1]:
             if self.cursor > 0:
                 self.cursor -= 1
                 return True
 
-    def key_down(self) -> bool:
+    def key_down(self, key_char) -> bool:
         if self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(curses.KEY_DOWN) != [1]:
             if self.cursor < len(self.elements.get_elements_collection(lambda element: element.flags.is_active_element)) - 1:
                 self.cursor += 1

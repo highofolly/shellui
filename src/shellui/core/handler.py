@@ -21,6 +21,7 @@ class KeyboardManager:
             if event.rule(key_char):
                 logging.keyboard(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
                 return_list.append(event.function())
+                return_list.append(event.function(key_char))
         return return_list
 
 
