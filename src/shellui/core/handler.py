@@ -1,4 +1,4 @@
-from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit, KeyboardEvent, TypedDict
+from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit, KeyboardEvent, Collection, Union, Self
 from ..common.debug import logger
 
 
@@ -91,3 +91,45 @@ class EventManager:
 
         self.create = Create(self)
         self.call = Call()
+
+
+class CursorHandler:
+    collection: Collection
+
+    def __init__(self, collection, position: int = 0, style: str = "> %(widget)s"):
+        self.collection: Collection = collection
+        self.__position: int = position
+        self.style: str = style
+
+    @property
+    def current(self) -> BaseElementInterface:
+        return self.get_element_by_position(self)
+
+    @current.setter
+    def current(self, link):  ...
+
+    @property
+    def position(self):
+        return self.__position
+
+    @position.setter
+    def position(self, value: int):
+        self.__position = value
+
+    def get_element_by_position(self, position: Union[int, Self]) -> BaseElementInterface:
+        if isinstance(position, self.__class__):
+            position = position.position
+        if len(self.collection) > position >= 0:
+            return self.collection[position]
+
+    def move(self, step: int, rule: Callable[[BaseElementInterface], bool]):
+        while True:
+            current = self.get_element_by_position(self.__position + step)
+            if current:
+                if rule(current):
+                    self.__position += step
+                    return self.__position
+                else:
+                    step += step
+            else:
+                return None

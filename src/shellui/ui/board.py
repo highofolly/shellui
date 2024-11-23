@@ -1,6 +1,7 @@
 from .abstracts import AbstractWidget, AbstractLayout, ElementState, BaseElement
 from ..common.debug import logger
 from ..common.types import List, Any, Size, Buffer
+from ..core.handler import CursorHandler
 import curses
 
 
@@ -37,8 +38,7 @@ class Layout(AbstractLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.flags: Widget.BaseFlags = self.flags
-        self.cursor: int = 0
-        self.cursor_skin: str = kwargs.pop("cursor_skin", "> ")
+        self.cursor: CursorHandler = CursorHandler(self.elements)
         self.flags.is_active_element = True
         self.UP_KEYS = [curses.KEY_UP, curses.KEY_LEFT, curses.KEY_BTAB]
         self.DOWN_KEYS = [curses.KEY_DOWN, curses.KEY_RIGHT, 9]
@@ -46,26 +46,30 @@ class Layout(AbstractLayout):
         self.keyboard.add_keyboard_event(self.key_up, lambda key_char: key_char in self.UP_KEYS)
         self.keyboard.add_keyboard_event(self.key_down, lambda key_char: key_char in self.DOWN_KEYS)
 
-    def set_cursor_skin(self, skin: str) -> None:
-        self.cursor_skin = skin
+    def on_click(self, key) -> Any:
+        current = self.cursor.current
+        if current:
+            return current.keyboard.key_pressed(key)
 
-    def on_click(self, key_char) -> Any:
-        return self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(10)
-
-    def key_up(self, key_char) -> bool:
-        if self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(curses.KEY_UP) != [1]:
-            if self.cursor > 0:
-                self.cursor -= 1
+    def key_up(self, key) -> bool:
+        if not any(self.cursor.current.keyboard.key_pressed(key)):
+            if self.cursor.move(-1, lambda current: current.flags.is_active_element):
                 return True
+            return False
+        else:
+            return True
 
-    def key_down(self, key_char) -> bool:
-        if self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].keyboard.key_pressed(curses.KEY_DOWN) != [1]:
-            if self.cursor < len(self.elements.get_elements_collection(lambda element: element.flags.is_active_element)) - 1:
-                self.cursor += 1
+    def key_down(self, key) -> bool:
+        lox = self.cursor.current.keyboard.key_pressed(key)
+        if not any(lox):
+            if self.cursor.move(1, lambda current: current.flags.is_active_element):
                 return True
+            return False
+        else:
+            return True
 
     def select(self):
-        self.elements.get_elements_collection(lambda element: element.flags.is_active_element)[self.cursor].event.call.select()
+        self.cursor.current.event.call.select()
         return super().select()
 
     def deselect(self):
@@ -92,9 +96,9 @@ class Layout(AbstractLayout):
         self.event.call.select()
         return return_list
 
-    def style(self, element: Widget) -> str:
+    def __style__(self, element: Widget) -> str:
         if element.state == ElementState.SELECTED and element.flags.is_active_element:
-            return f"{self.cursor_skin}{element.render()}"
+            return self.cursor.style % {"widget": element.render()}
         else:
             return element.render()
 
@@ -172,7 +176,7 @@ class VLayout(Layout):
         temp_pos = 0
         temp_elements = self.elements.get_elements_collection()
         for element in temp_elements.get_elements_collection(lambda element: isinstance(element, Widget)):
-            element.event.create.render((lambda element: lambda: self.style(element))(element))
+            element.event.create.render((lambda element: lambda: self.__style__(element))(element))
         for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.y):
             buffer.position.y = temp_pos
             temp_pos += buffer.size.height
@@ -191,9 +195,9 @@ class HLayout(Layout):
         temp_pos = 0
         temp_elements = self.elements.get_elements_collection()
         for element in temp_elements.get_elements_collection(lambda element: isinstance(element, Widget)):
-            element.event.create.render((lambda element: lambda: self.style(element))(element))
+            element.event.create.render((lambda element: lambda: self.__style__(element))(element))
         for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.x):
             buffer.position.x = temp_pos
-            temp_pos += buffer.size.width + len(self.cursor_skin)
+            temp_pos += buffer.size.width + len(self.cursor.style % {"widget": ""})
             matrix.append(buffer)
         return matrix
