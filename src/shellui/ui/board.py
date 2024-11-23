@@ -1,5 +1,5 @@
 from .abstracts import AbstractWidget, AbstractLayout, ElementState, BaseElement
-from ..common.debug import logging
+from ..common.debug import logger
 from ..common.types import List, Any, Size, Buffer
 import curses
 

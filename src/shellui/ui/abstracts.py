@@ -1,5 +1,5 @@
 from ..common.types import Buffer, Position, Size, Collection, ElementState, Tuple, Any, Union, List, overload, runtime_checkable, Protocol, ABC, abstractmethod
-from ..common.debug import logging
+from ..common.debug import logger
 from ..core.handler import EventManager, FlagsManager, KeyboardManager
 
 
@@ -40,7 +40,7 @@ class BaseElement(ABC):
         if "flags" in kwargs:
             for key, value in kwargs["flags"].items():
                 self.flags.set_flag("key", value)
-        logging.create(f"CREATE CLASS <{self.__class__.__name__}> (tag={self.tag}) (agrs={args}, kwargs={kwargs})")
+        logger.create(f"CREATE CLASS <{self.__class__.__name__}> (tag={self.tag}) (agrs={args}, kwargs={kwargs})")
 
     def select(self) -> None:
         """

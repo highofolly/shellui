@@ -1,5 +1,5 @@
 from .interfaces import BaseElementInterface
-from .debug import logging
+from .debug import logger
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import *
@@ -167,7 +167,7 @@ class EventUnit:
         if len(kwargs_items) > 2:
             kwargs_str += ', ...'
 
-        logging.event(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS EVENT <{self.function.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
+        logger.event(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS EVENT <{self.function.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
         return self.function(*args, **kwargs)
 
 

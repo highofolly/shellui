@@ -1,5 +1,5 @@
 from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit, KeyboardEvent, TypedDict
-from ..common.debug import logging
+from ..common.debug import logger
 
 
 class KeyboardManager:
@@ -19,8 +19,7 @@ class KeyboardManager:
         return_list: List[Any] = []
         for event in self.keyboard_events:
             if event.rule(key_char):
-                logging.keyboard(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
-                return_list.append(event.function())
+                logger.keyboard(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS KEYBOARD EVENT <{event.function.__name__}> (agrs=None, kwargs=None)")
                 return_list.append(event.function(key_char))
         return return_list
 
@@ -39,7 +38,7 @@ class FlagsManager(dict):
     def __getattr__(self, key) -> bool:
         flag = self.get(key, None)
         if flag is None:
-            logging.warning(f"CLASS FLAG <{self.parent.__class__.__name__}> (tag={self.parent.tag}) <{key}> WAS NOT CREATED!")
+            logger.warning(f"CLASS FLAG <{self.parent.__class__.__name__}> (tag={self.parent.tag}) <{key}> WAS NOT CREATED!")
         return flag
 
     def __setattr__(self, key: str, value: bool) -> None:
