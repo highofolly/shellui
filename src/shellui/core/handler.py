@@ -86,7 +86,7 @@ class EventManager:
 
                 :param name: Event argument name
                 """
-                setattr(self, name, EventUnit(parent))
+                setattr(self, name, EventUnit(name, parent))
                 return getattr(self, name).__setfunc__
 
         self.create = Create(self)

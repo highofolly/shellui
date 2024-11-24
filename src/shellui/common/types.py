@@ -137,7 +137,8 @@ class EventUnit:
     """
     Represents event unit that associated function with EventManager class
     """
-    parent: BaseElementInterface = BaseElementInterface
+    event_name: str
+    parent: BaseElementInterface
     """Parent class object"""
 
     def __setfunc__(self, function: Callable = None):
@@ -167,7 +168,7 @@ class EventUnit:
         if len(kwargs_items) > 2:
             kwargs_str += ', ...'
 
-        logger.event(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS EVENT <{self.function.__name__}> (agrs={args_str}, kwargs={kwargs_str})")
+        logger.event(f"CLASS <{self.parent.__class__.__name__}> (tag={self.parent.tag}) CALLS EVENT <{self.event_name}> (<{self.function.__name__}>) (agrs={args_str}, kwargs={kwargs_str})")
         return self.function(*args, **kwargs)
 
 
