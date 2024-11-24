@@ -155,7 +155,7 @@ class CheckBox(Widget):
         self.size = Size(4 + max(len(line) for line in lines), len(lines))
         return self.size
 
-    def on_click(self):
+    def on_click(self, key):
         self.flags.is_checked = False if self.is_checked() else True
 
     def is_checked(self):

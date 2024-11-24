@@ -1,8 +1,9 @@
 from .abstracts import BaseElement
+from .board import Layout
 from ..core.terminal import Terminal
 
 
-class Root:
+class Root(Layout):
     """
     Represents link between layout and terminal
     """
@@ -29,6 +30,9 @@ class Root:
         Sets main layout for root
         """
         self.layout = layout
+
+    def render(self):
+        self.refresh()
 
     def refresh(self) -> None:
         """
