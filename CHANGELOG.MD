@@ -1,4 +1,17 @@
 
+v0.3.2-beta / 2024-11-24
+==================
+
+## major changes:
+### added:
+* inheritance of Layout class to Root class
+* event_name parameter in EventUnit class
+* CursorHandler handler class
+* AbstractLayout interface
+### fixed:
+* search_elements_by_tag method in AbstractLayout class
+* keyboard event call in KeyboardManager.key_pressed method
+
 v0.3.1 / 2024-10-19
 ==================
 
