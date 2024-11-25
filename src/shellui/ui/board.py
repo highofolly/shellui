@@ -1,7 +1,7 @@
 from .abstracts import AbstractWidget, AbstractLayout, ElementState, BaseElement
 from ..common.debug import logger
 from ..common.types import List, Any, Size, Buffer
-from ..core.handler import CursorHandler
+from ..core.handler import CursorController
 import curses
 
 
@@ -38,7 +38,7 @@ class Layout(AbstractLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.flags: Widget.BaseFlags = self.flags
-        self.cursor: CursorHandler = CursorHandler(self.elements)
+        self.cursor: CursorController = CursorController(self.elements)
         self.flags.is_active_element = True
         self.UP_KEYS = [curses.KEY_UP, curses.KEY_LEFT, curses.KEY_BTAB]
         self.DOWN_KEYS = [curses.KEY_DOWN, curses.KEY_RIGHT, 9]

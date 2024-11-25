@@ -2,7 +2,7 @@ from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit,
 from ..common.debug import logger
 
 
-class KeyboardManager:
+class KeyboardHandler:
     def __init__(self, parent: BaseElementInterface = None):
         """
         :param parent: Parent class object
@@ -24,9 +24,9 @@ class KeyboardManager:
         return return_list
 
 
-class FlagsManager(dict):
+class FlagsController(dict):
     def __init__(self, parent: BaseElementInterface):
-        super(FlagsManager, self).__init__()
+        super().__init__()
         self.parent: BaseElementInterface = parent or BaseElementInterface
 
     def set_flag(self, key: str, value: Any) -> None:
@@ -93,9 +93,7 @@ class EventManager:
         self.call = Call()
 
 
-class CursorHandler:
-    collection: Collection
-
+class CursorController:
     def __init__(self, collection, position: int = 0, style: str = "> %(widget)s"):
         self.collection: Collection = collection
         self.__position: int = position

@@ -1,6 +1,6 @@
 from ..common.types import Buffer, Position, Size, Collection, ElementState, Tuple, Any, Union, List, overload, runtime_checkable, Protocol, ABC, abstractmethod
 from ..common.debug import logger
-from ..core.handler import EventManager, FlagsManager, KeyboardManager
+from ..core.handler import EventManager, FlagsController, KeyboardHandler
 
 
 class BaseElement(ABC):
@@ -26,8 +26,8 @@ class BaseElement(ABC):
         self.tag: str = kwargs.pop("tag", self.class_base_tag)
         self.state: ElementState = ElementState.MISSED
 
-        self.flags: BaseElement.BaseFlags = FlagsManager(self)
-        self.keyboard: KeyboardManager = KeyboardManager(self)
+        self.flags: BaseElement.BaseFlags = FlagsController(self)
+        self.keyboard: KeyboardHandler = KeyboardHandler(self)
         self.event: EventManager = EventManager(self)
         self.event.create.get_size(self.get_size)
         self.event.create.update(self.update)
