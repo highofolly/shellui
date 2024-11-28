@@ -18,18 +18,13 @@ class Widget(AbstractWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.flags: Widget.BaseFlags = self.flags
-        self.text: str = ""
         self.flags.is_active_element = False
-        self.set_text(kwargs.pop("text", ""))
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
 
     def update(self): ...
     def render(self): ...
-    def on_click(self) -> Any: ...
+    def on_click(self, key: int) -> Any: ...
     def get_size(self) -> Size: ...
-
-    def set_text(self, text: str):
-        self.text = text
 
 
 class Layout(AbstractLayout):
@@ -111,6 +106,10 @@ class Label(Widget):
     """
     class_base_tag = "Label"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text: str = kwargs.pop("text", "")
+
     def get_size(self):
         lines = self.text.split('\n')
         self.size = Size(max(len(line) for line in lines), len(lines))
@@ -119,8 +118,11 @@ class Label(Widget):
     def render(self):
         return self.text
 
+    def set_text(self, text: str):
+        self.text = text
 
-class Button(Widget):
+
+class Button(Label):
     """
     Represents graphical button element
     """
@@ -130,16 +132,8 @@ class Button(Widget):
         super(Button, self).__init__(*args, **kwargs)
         self.flags.is_active_element = True
 
-    def get_size(self):
-        lines = self.text.split('\n')
-        self.size = Size(max(len(line) for line in lines), len(lines))
-        return self.size
 
-    def render(self):
-        return self.text
-
-
-class CheckBox(Widget):
+class CheckBox(Label):
     """
     Represents graphical checkbox element
     """
