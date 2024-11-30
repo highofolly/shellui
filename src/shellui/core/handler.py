@@ -58,7 +58,7 @@ class EventManager:
         """
         :param parent: Parent class object
         """
-        class Create:
+        class Set:
             """
             Responsible for creating events
             """
@@ -68,28 +68,28 @@ class EventManager:
                 """
                 self.cls = cls
 
-            def __getattr__(self, name: str):
+            def __getattr__(self, event_name: str):
                 """
                 Creates an event by argument name
 
-                :param name: Event argument name
+                :param event_name: Event argument name
                 """
-                return self.cls.call.__newattr__(name)
+                return self.cls.call.__newattr__(event_name)
 
         class Call:
             """
             Responsible for calling events
             """
-            def __newattr__(self, name: str):
+            def __newattr__(self, event_name: str):
                 """
                 Creates an EventUnit object for the specified event argument name
 
-                :param name: Event argument name
+                :param event_name: Event argument name
                 """
                 setattr(self, name, EventUnit(name, parent))
                 return getattr(self, name).__setfunc__
 
-        self.create = Create(self)
+        self.set = Set(self)
         self.call = Call()
 
 

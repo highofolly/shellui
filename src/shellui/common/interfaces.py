@@ -40,7 +40,7 @@ class CallInterface(Protocol):
 
 @runtime_checkable
 class EventManagerInterface(Protocol):
-    create: CreateInterface
+    set: CreateInterface
     call: CallInterface
     def __init__(self, parent: object): ...
 
