@@ -11,7 +11,7 @@ class BaseElement(ABC):
 
     @runtime_checkable
     class BaseFlags(Protocol):
-        is_fixed_size: bool
+        isFixedSize: bool
         def set_flag(self, key, value) -> None: ...
         def get_flag(self, key) -> bool: ...
         def __getattr__(self, key) -> bool: ...
@@ -35,7 +35,7 @@ class BaseElement(ABC):
                               build=self.build,
                               select=self.select,
                               deselect=self.deselect)
-        self.flags.is_fixed_size = False
+        self.flags.isFixedSize = False
 
         if "flags" in kwargs:
             for key, value in kwargs["flags"].items():
@@ -152,7 +152,7 @@ class AbstractLayout(BaseElement):
         if len(args) == 1 or kwargs.get("element", None):
             position = kwargs.get("position", None)
             return_element = args[0]
-            if not return_element.flags.is_fixed_size:
+            if not return_element.flags.isFixedSize:
                 if position:
                     return_element.position = (position if isinstance(position, Position) else Position(*position)) if position else return_element.position
             self.elements.append(return_element)

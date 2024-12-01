@@ -83,7 +83,7 @@ class Layout(AbstractLayout):
     def update(self):
         return_list = super().update()
 
-        self.elements.call_elements_event("get_size", lambda element: not element.flags.is_fixed_size)
+        self.elements.call_elements_event("get_size", lambda element: not element.flags.isFixedSize)
         if not self.flags.is_fixed_size:
             self.event.call.get_size()
 
