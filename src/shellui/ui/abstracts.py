@@ -63,7 +63,7 @@ class BaseElement(ABC):
         pass
 
     def set_fixed_size(self, *args, **kwargs):
-        self.flags.is_fixed_size = True
+        self.flags.isFixedSize = True
         width, height = kwargs.pop("width", None), kwargs.pop("height", None)
         size = kwargs.pop("size", None)
         if len(args) == 1:
@@ -76,7 +76,7 @@ class BaseElement(ABC):
             self.size = Size(*size)
 
     def set_floating_size(self):
-        self.flags.is_fixed_size = False
+        self.flags.isFixedSize = False
 
     @abstractmethod
     def get_size(self) -> Size:

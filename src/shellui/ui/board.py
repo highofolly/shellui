@@ -6,7 +6,7 @@ import curses
 
 
 class BaseFlags(BaseElement.BaseFlags):
-    is_active_element: bool
+    isActiveElement: bool
 
 
 class Widget(AbstractWidget):
@@ -18,7 +18,7 @@ class Widget(AbstractWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.flags: Widget.BaseFlags = self.flags
-        self.flags.is_active_element = False
+        self.flags.isActiveElement = False
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
 
     def update(self): ...
@@ -34,7 +34,7 @@ class Layout(AbstractLayout):
         super().__init__(*args, **kwargs)
         self.flags: Widget.BaseFlags = self.flags
         self.cursor: CursorController = CursorController(self.elements)
-        self.flags.is_active_element = True
+        self.flags.isActiveElement = True
         self.UP_KEYS = [curses.KEY_UP, curses.KEY_LEFT, curses.KEY_BTAB]
         self.DOWN_KEYS = [curses.KEY_DOWN, curses.KEY_RIGHT, 9]
         self.keyboard.add_keyboard_event(self.on_click, lambda key_char: key_char == 10)
@@ -48,7 +48,7 @@ class Layout(AbstractLayout):
 
     def key_up(self, key) -> bool:
         if not any(self.cursor.current.keyboard.key_pressed(key)):
-            if self.cursor.move(-1, lambda current: current.flags.is_active_element):
+            if self.cursor.move(-1, lambda current: current.flags.isActiveElement):
                 return True
             return False
         else:
@@ -57,7 +57,7 @@ class Layout(AbstractLayout):
     def key_down(self, key) -> bool:
         lox = self.cursor.current.keyboard.key_pressed(key)
         if not any(lox):
-            if self.cursor.move(1, lambda current: current.flags.is_active_element):
+            if self.cursor.move(1, lambda current: current.flags.isActiveElement):
                 return True
             return False
         else:
@@ -68,7 +68,7 @@ class Layout(AbstractLayout):
         return super().select()
 
     def deselect(self):
-        self.elements.call_elements_event("deselect", lambda element: element.flags.is_active_element)
+        self.elements.call_elements_event("deselect", lambda element: element.flags.isActiveElement)
         return super().deselect()
 
     def get_size(self):
@@ -84,7 +84,7 @@ class Layout(AbstractLayout):
         return_list = super().update()
 
         self.elements.call_elements_event("get_size", lambda element: not element.flags.isFixedSize)
-        if not self.flags.is_fixed_size:
+        if not self.flags.isFixedSize:
             self.event.call.get_size()
 
         self.event.call.deselect()
@@ -92,7 +92,7 @@ class Layout(AbstractLayout):
         return return_list
 
     def __style__(self, element: Widget) -> str:
-        if element.state == ElementState.SELECTED and element.flags.is_active_element:
+        if element.state == ElementState.SELECTED and element.flags.isActiveElement:
             return self.cursor.style % {"widget": element.render()}
         else:
             return element.render()
@@ -129,8 +129,8 @@ class Button(Label):
     class_base_tag = "Button"
 
     def __init__(self, *args, **kwargs):
-        super(Button, self).__init__(*args, **kwargs)
-        self.flags.is_active_element = True
+        super().__init__(*args, **kwargs)
+        self.flags.isActiveElement = True
 
 
 class CheckBox(Label):
@@ -140,9 +140,9 @@ class CheckBox(Label):
     class_base_tag = "CheckBox"
 
     def __init__(self, *args, **kwargs):
-        super(CheckBox, self).__init__(*args, **kwargs)
-        self.flags.is_active_element = True
-        self.flags.is_checked = False
+        super().__init__(*args, **kwargs)
+        self.flags.isActiveElement = True
+        self.flags.isChecked = False
 
     def get_size(self):
         lines = self.text.split('\n')
@@ -150,13 +150,13 @@ class CheckBox(Label):
         return self.size
 
     def on_click(self, key):
-        self.flags.is_checked = False if self.is_checked() else True
+        self.flags.isChecked = False if self.isChecked() else True
 
-    def is_checked(self):
-        return self.flags.is_checked
+    def isChecked(self):
+        return self.flags.isChecked
 
     def render(self):
-        return f"[*] {self.text}" if self.is_checked() else f"[ ] {self.text}"
+        return f"[*] {self.text}" if self.isChecked() else f"[ ] {self.text}"
 
 
 class VLayout(Layout):
