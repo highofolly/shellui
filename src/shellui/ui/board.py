@@ -170,7 +170,7 @@ class VLayout(Layout):
         temp_pos = 0
         temp_elements = self.elements.get_elements_collection()
         for element in temp_elements.get_elements_collection(lambda element: isinstance(element, Widget)):
-            element.event.create.render((lambda element: lambda: self.__style__(element))(element))
+            element.event.set.render((lambda element: lambda: self.__style__(element))(element))
         for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.y):
             buffer.position.y = temp_pos
             temp_pos += buffer.size.height

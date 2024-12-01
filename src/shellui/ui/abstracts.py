@@ -29,12 +29,12 @@ class BaseElement(ABC):
         self.flags: BaseElement.BaseFlags = FlagsController(self)
         self.keyboard: KeyboardHandler = KeyboardHandler(self)
         self.event: EventManager = EventManager(self)
-        self.event.create.get_size(self.get_size)
-        self.event.create.update(self.update)
-        self.event.create.render(self.render)
-        self.event.create.build(self.build)
-        self.event.create.select(self.select)
-        self.event.create.deselect(self.deselect)
+        self.event.set_events(get_size=self.get_size,
+                              update=self.update,
+                              render=self.render,
+                              build=self.build,
+                              select=self.select,
+                              deselect=self.deselect)
         self.flags.is_fixed_size = False
 
         if "flags" in kwargs:
@@ -126,7 +126,7 @@ class AbstractLayout(BaseElement):
     def __init__(self, *args, **kwargs):
         super(AbstractLayout, self).__init__(*args, **kwargs)
         self.elements: Collection = Collection()
-        self.event.create.get_by_tag(self.search_elements_by_tag)
+        self.event.set.get_by_tag(self.search_elements_by_tag)
 
     @overload
     def add_elements(self, element: BaseElement, position: Union[Position, Tuple[int, int]] = None) -> BaseElement:

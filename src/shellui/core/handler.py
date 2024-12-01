@@ -1,4 +1,4 @@
-from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit, KeyboardEvent, Collection, Union, Self
+from ..common.types import Callable, List, Any, BaseElementInterface, EventUnit, KeyboardEvent, Collection, Union, Self, overload
 from ..common.debug import logger
 
 
@@ -86,12 +86,41 @@ class EventManager:
 
                 :param event_name: Event argument name
                 """
-                setattr(self, name, EventUnit(name, parent))
-                return getattr(self, name).__setfunc__
+                setattr(self, event_name, EventUnit(event_name, parent))
+                return getattr(self, event_name).__setfunc__
 
         self.set = Set(self)
         self.call = Call()
 
+    @overload
+    def set_events(self, event_name: str, function: Callable): ...
+    @overload
+    def set_events(self, events: dict[str, Callable]): ...
+    @overload
+    def set_events(self, **kwargs): ...
+
+    def set_events(self, *args, **kwargs):
+        events: dict[str, Callable] = {}
+        if args:
+            if type(args[0]) is dict:
+                events = args[0]
+            else:
+                events = {args[0]: args[1]}
+        else:
+            events = kwargs
+        for event_name, function in events.items():
+            self.call.__newattr__(event_name)(function)
+
+    @overload
+    def call_events(self, event_name: str) -> Any: ...
+    @overload
+    def call_events(self, *args: str) -> Any: ...
+
+    def call_events(self, *args, **kwargs) -> List[Any]:
+        return_list = []
+        for event_name in args:
+            return self.call.__getattribute__(event_name)
+        return return_list
 
 class CursorController:
     def __init__(self, collection, position: int = 0, style: str = "> %(widget)s"):
