@@ -1,4 +1,23 @@
 
+v0.3.2 / 2024-12-09
+==================
+
+## major changes:
+### added:
+* elements:
+  * \_\_style__ and \_\_align__ methods to AbstractLayout
+* handlers:
+  * set_events and call_event methods to EventManager
+## minor changes:
+### changed:
+* elements:
+  * change widgets hierarchy
+  * rename flag is_fixed_size to isFixedSize
+  * rename flag is_active_element to isActiveElement
+* handlers:
+  * rename KeyboardManager, FlagsManager and CursorHandler classes
+  * rename attribute Create to Set in EventManager
+
 v0.3.2-beta / 2024-11-24
 ==================
 
