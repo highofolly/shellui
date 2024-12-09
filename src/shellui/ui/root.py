@@ -1,5 +1,6 @@
 from .abstracts import BaseElement
 from .board import Layout
+from ..common import Collection
 from ..core.terminal import Terminal
 
 
@@ -12,6 +13,9 @@ class Root(Layout):
         cls.terminal = Terminal()
         cls.layout: BaseElement
         return instance
+
+    def __style__(self, element): ...
+    def __align__(self, elements): ...
 
     def update(self):
         """

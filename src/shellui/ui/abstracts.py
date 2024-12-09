@@ -1,4 +1,4 @@
-from ..common.types import Buffer, Position, Size, Collection, ElementState, Tuple, Any, Union, List, overload, runtime_checkable, Protocol, ABC, abstractmethod
+from ..common.types import Buffer, Position, Size, Collection, ElementState, Tuple, Any, Union, List, overload, runtime_checkable, Protocol, ABC, abstractmethod, Self
 from ..common.debug import logger
 from ..core.handler import EventManager, FlagsController, KeyboardHandler
 
@@ -55,12 +55,9 @@ class BaseElement(ABC):
         self.state = ElementState.MISSED
 
     @overload
-    def set_fixed_size(self, size: Union[Size, Tuple[int, int], List[int]]) -> None:
-        pass
-
+    def set_fixed_size(self, size: Union[Size, Tuple[int, int], List[int]]) -> None: ...
     @overload
-    def set_fixed_size(self, width: int, height: int) -> None:
-        pass
+    def set_fixed_size(self, width: int, height: int) -> None: ...
 
     def set_fixed_size(self, *args, **kwargs):
         self.flags.isFixedSize = True
@@ -128,6 +125,13 @@ class AbstractLayout(BaseElement):
         self.elements: Collection = Collection()
         self.event.set.get_by_tag(self.search_elements_by_tag)
 
+    @abstractmethod
+    def __style__(self, element: Self) -> str:
+        raise NotImplementedError
+    @abstractmethod
+    def __align__(self, elements: Collection) -> List[Buffer]:
+        raise NotImplementedError
+
     @overload
     def add_elements(self, element: BaseElement, position: Union[Position, Tuple[int, int]] = None) -> BaseElement:
         """
@@ -168,3 +172,9 @@ class AbstractLayout(BaseElement):
 
     def update(self):
         return self.elements.call_elements_event("update")
+
+    def render(self):
+        temp_elements = self.elements.get_elements_collection()
+        for element in temp_elements.get_elements_collection(lambda element: isinstance(element, AbstractWidget)):
+            element.event.set.render((lambda element: lambda: self.__style__(element))(element))
+        return self.__align__(temp_elements)

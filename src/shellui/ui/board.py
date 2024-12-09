@@ -1,4 +1,5 @@
 from .abstracts import AbstractWidget, AbstractLayout, ElementState, BaseElement
+from ..common import Collection
 from ..common.debug import logger
 from ..common.types import List, Any, Size, Buffer
 from ..core.handler import CursorController
@@ -91,13 +92,11 @@ class Layout(AbstractLayout):
         self.event.call.select()
         return return_list
 
-    def __style__(self, element: Widget) -> str:
+    def __style__(self, element):
         if element.state == ElementState.SELECTED and element.flags.isActiveElement:
             return self.cursor.style % {"widget": element.render()}
         else:
             return element.render()
-
-    def render(self): ...
 
 
 class Label(Widget):
@@ -165,13 +164,10 @@ class VLayout(Layout):
     """
     class_base_tag = "VLayout"
 
-    def render(self):
+    def __align__(self, elements):
         matrix: List[Buffer] = []
         temp_pos = 0
-        temp_elements = self.elements.get_elements_collection()
-        for element in temp_elements.get_elements_collection(lambda element: isinstance(element, Widget)):
-            element.event.set.render((lambda element: lambda: self.__style__(element))(element))
-        for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.y):
+        for buffer in sorted(elements.call_elements_event("build"), key=lambda element: element.position.y):
             buffer.position.y = temp_pos
             temp_pos += buffer.size.height
             matrix.append(buffer)
@@ -184,13 +180,10 @@ class HLayout(Layout):
     """
     class_base_tag = "HLayout"
 
-    def render(self):
+    def __align__(self, elements):
         matrix: List[Buffer] = []
         temp_pos = 0
-        temp_elements = self.elements.get_elements_collection()
-        for element in temp_elements.get_elements_collection(lambda element: isinstance(element, Widget)):
-            element.event.create.render((lambda element: lambda: self.__style__(element))(element))
-        for buffer in sorted(temp_elements.call_elements_event("build"), key=lambda element: element.position.x):
+        for buffer in sorted(elements.call_elements_event("build"), key=lambda element: element.position.x):
             buffer.position.x = temp_pos
             temp_pos += buffer.size.width + len(self.cursor.style % {"widget": ""})
             matrix.append(buffer)
